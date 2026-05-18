@@ -103,6 +103,7 @@ button {
     right: 50px;
     bottom: 230px;
     display: flex;
+    z-index: 3;
 }
 
 .globe-slider .slider-btns button {
@@ -111,6 +112,7 @@ button {
     background: none;
     margin-left: 6px;
     margin-right: 6px;
+    line-height: 0;
 }
 
 .globe-slider #slider-wrapper {
@@ -163,13 +165,14 @@ button {
     left: 15px;
     padding: 8px;
     border-radius: 16px;
-    color: #2661FF;
+    color: #2661FF !important;
     font-weight: 600;
     font-size: 13px;
     background-color: #B4D0F8;
-    display: flex;
+    display: flex !important;
     align-items: center;
     column-gap: 4px;
+    z-index: 2;
 }
 
 .globe-slider .slider-item .slider-location-name img,
