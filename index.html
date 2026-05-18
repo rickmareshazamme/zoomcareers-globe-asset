@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zoom Globe Slider</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Draggable.min.js"></script>
+    <script src="https://assets.codepen.io/16327/InertiaPlugin.min.js"></script>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.1/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <section class="globe-slider-section">
+        <div class="globe-slider">
+            <div class="globe-container">
+                <div class="globe-wrapper">
+                    <canvas id="globe-3d"></canvas>
+                    <div id="globe-popups-overlay"></div>
+                </div>
+
+                <div class="slider-btns">
+                    <button class="prev" aria-label="Previous">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
+                            <rect width="60" height="60" rx="13" fill="#D7E6FC" />
+                            <path d="M35 17L20 29.5L35 42" stroke="#0B5CFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button class="next" aria-label="Next">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
+                            <rect width="60" height="60" rx="13" fill="#0B5CFF" />
+                            <path d="M25 42L40 29.5L25 17" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="slider-wrapper"></div>
+                <div id="dummy-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
