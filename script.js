@@ -20,72 +20,72 @@ const locations = [{
     name: 'San Jose | Global HQ',
     location: coordToPos(37, -125),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-San-Jose-300x300.png",
-    sliderPicURL: "assets/images/San-Jose-Image-768x457.png",
-    countryIconURL: "assets/flags/US-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-San-Jose-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/San-Jose-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg"
 }, {
     name: 'London',
     location: coordToPos(60, -5),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-London-300x300.png",
-    sliderPicURL: "assets/images/London-Image-768x457.png",
-    countryIconURL: "assets/flags/UK-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-London-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/London-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/UK-Flag.svg"
 }, {
     name: 'Bangalore',
     location: coordToPos(19, 72),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-Bangalore-300x300.png",
-    sliderPicURL: "assets/images/Bangalore-Image-768x457.png",
-    countryIconURL: "assets/flags/India-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Bangalore-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Bangalore-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/India-Flag.svg"
 }, {
     name: 'Seattle',
     location: coordToPos(53, -125),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-Seattle-300x300.png",
-    sliderPicURL: "assets/images/Seattle-Image-768x457.png",
-    countryIconURL: "assets/flags/US-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Seattle-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Seattle-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg"
 }, {
     name: 'Denver',
     location: coordToPos(39, -104),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-Denver-300x300.png",
-    sliderPicURL: "assets/images/Denver-Image-768x457.png",
-    countryIconURL: "assets/flags/US-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Denver-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Denver-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg"
 }, {
     name: 'Amsterdam',
     location: coordToPos(55, 8),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-Amsterdam-300x300.png",
-    sliderPicURL: "assets/images/Amsterdam-Image-768x457.png",
-    countryIconURL: "assets/flags/Netherlands-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Amsterdam-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Amsterdam-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Netherlands-Flag.svg"
 }, {
     name: 'Dublin',
     location: coordToPos(54, -9),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-Dublin-300x300.png",
-    sliderPicURL: "assets/images/Dublin-Image-768x457.png",
-    countryIconURL: "assets/flags/Ireland-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Dublin-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Dublin-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Ireland-Flag.svg"
 }, {
     name: 'Singapore',
     location: coordToPos(1, 103),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-Singapore-300x300.png",
-    sliderPicURL: "assets/images/Singapore-Image-768x457.png",
-    countryIconURL: "assets/flags/Singapore.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Singapore-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Singapore-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Singapore.svg"
 }, {
     name: 'Tokyo',
     location: coordToPos(35, 139),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-Tokyo-300x300.png",
-    sliderPicURL: "assets/images/Tokyo-Image-768x457.png",
-    countryIconURL: "assets/flags/Japan-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Tokyo-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Tokyo-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Japan-Flag.svg"
 }, {
     name: 'Sydney',
     location: coordToPos(-33, 150),
     midScreenDist: 0,
-    avatarPicURL: "assets/avatars/Globe-Avatar-Sydney-300x300.png",
-    sliderPicURL: "assets/images/Sydney-Image-768x457.png",
-    countryIconURL: "assets/flags/Australia-Flag.svg"
+    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Sydney-300x300.png",
+    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Sydney-Image-768x457.png",
+    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Australia-Flag.svg"
 }];
 
 initScene();
@@ -256,7 +256,7 @@ function initScene() {
 
     const gltfLoader = new GLTFLoader();
     gltfLoader.load(
-        'assets/model/globe-geometry.glb',
+        'https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/model/globe-geometry.glb',
         (gltf) => {
             const terra = gltf.scene.children[0];
             terra.castShadow = true;
@@ -410,7 +410,7 @@ function render() {
 }
 
 function updateSceneSize() {
-    const size = 1.8 * window.innerHeight;
+    const size = 1.37 * window.innerHeight;
     renderer.setSize(size, size);
 }
 
