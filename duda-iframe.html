@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Zoom Careers Globe</title><style>html,body{margin:0;padding:0;background:#B4D0F8}</style></head><body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Zoom Careers Globe</title><style>html,body{margin:0;padding:0;background:#B4D0F8}</style></head><body>
 <!--
   Zoom Careers — 3D Globe Slider, 100% standalone Duda HTML widget.
 
@@ -59,27 +59,6 @@
   /* === Self-host the brand fonts so the widget works even if it ends up
         inside an isolated context (iframe, shadow DOM, etc) where the parent
         page's @font-face declarations can't reach. */
-  @font-face {
-    font-family: "AlmadenSans-Regular-WebXL";
-    font-display: swap;
-    src: url("https://irp.cdn-website.com/22d89a44/fonts/AlmadenSans-Regular-WebXL-43bb_400.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "AlmadenSans-SemiBold-WebXL";
-    font-display: swap;
-    src: url("https://irp.cdn-website.com/22d89a44/fonts/AlmadenSans-SemiBold-WebXL-b659_400.woff2") format("woff2");
-  }
-  @font-face {
-    font-family: "HappyDisplay-Bold";
-    font-display: swap;
-    src: url("https://irp.cdn-website.com/22d89a44/fonts/HappyDisplay-Bold-f7f7_400.woff") format("woff");
-  }
-  @font-face {
-    font-family: "HappyDisplay-SemiBold";
-    font-display: swap;
-    src: url("https://irp.cdn-website.com/22d89a44/fonts/HappyDisplay-SemiBold-80eb_400.woff2") format("woff2");
-  }
-
   /* === Section wrapper (matches original .globe-slider-section) ============ */
   .zc-globe-section {
     background: #B4D0F8;
@@ -103,7 +82,7 @@
   }
   /* Eyebrow uses Almaden Sans like the .almaden class on the draft site */
   .zc-globe-section .zc-eyebrow {
-    font-family: "AlmadenSans-SemiBold-WebXL", "AlmadenSans-Regular-WebXL", "Almaden Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-family: "Inter", "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     font-size: 20px !important;
     line-height: 28px !important;
     font-weight: 600 !important;
@@ -115,7 +94,7 @@
      what Duda does to the child elements. 3 spans => 3 lines, guaranteed.
      Colour #2874FC is pixel-sampled from the draft (matches Duda's brand h2 colour). */
   .zc-globe-section .zc-headline {
-    font-family: "HappyDisplay-SemiBold", "HappyDisplay-Bold", "Internacional", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-family: "Manrope", "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     font-weight: 700 !important;
     font-size: clamp(28px, 3.2vw, 42px) !important;
     line-height: 1.05 !important;
@@ -139,7 +118,7 @@
   }
   /* Lede — 20px, weight 500, 452px max (size-text-20px medium-weight max_width_set) */
   .zc-globe-section .zc-lede {
-    font-family: "AlmadenSans-Regular-WebXL", "Almaden Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-family: "Inter", "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     font-size: 20px !important;
     line-height: 1.45 !important;
     font-weight: 500 !important;
@@ -154,7 +133,7 @@
     line-height: 1.45 !important;
     font-weight: 500 !important;
     color: #00031F !important;
-    font-family: "AlmadenSans-Regular-WebXL", "Almaden Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-family: "Inter", "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   }
 
   /* === Globe slider (sibling of text-row; pulled UP via negative margin
