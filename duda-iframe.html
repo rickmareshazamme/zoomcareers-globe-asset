@@ -1,22 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Zoom Careers Globe</title>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Draggable.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/InertiaPlugin.min.js"></script>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.1/examples/jsm/"
-  }
-}
-</script>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Zoom Careers Globe</title></head><body style="margin:0;background:#B4D0F8">
+<!--
+  Zoom Careers — 3D Globe Slider (Duda HTML widget, v1.2.0)
+  Fragment for Duda's HTML widget. All 31 assets stream from jsDelivr
+  (pinned to v1.0.0 of rickmareshazamme/zoomcareers-globe-asset).
+-->
 <style>
-html, body { margin: 0; padding: 0; height: 100%; background: #B4D0F8; }
+.zc-globe-slider-host { min-height: 860px; height: 100vh; width: 100%; position: relative; }
 *,
 *::before,
 *::after {
@@ -279,34 +268,51 @@ button {
     }
 }
 </style>
-</head>
-<body>
-<section class="globe-slider-section">
-  <div class="globe-slider">
-    <div class="globe-container">
-      <div class="globe-wrapper">
-        <canvas id="globe-3d"></canvas>
-        <div id="globe-popups-overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Draggable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/InertiaPlugin.min.js"></script>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.1/examples/jsm/"
+  }
+}
+</script>
+
+<div class="zc-globe-slider-host">
+  <section class="globe-slider-section">
+    <div class="globe-slider">
+      <div class="globe-container">
+        <div class="globe-wrapper">
+          <canvas id="globe-3d"></canvas>
+          <div id="globe-popups-overlay"></div>
+        </div>
+
+        <div class="slider-btns">
+          <button class="prev" aria-label="Previous">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
+              <rect width="60" height="60" rx="13" fill="#D7E6FC" />
+              <path d="M35 17L20 29.5L35 42" stroke="#0B5CFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <button class="next" aria-label="Next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
+              <rect width="60" height="60" rx="13" fill="#0B5CFF" />
+              <path d="M25 42L40 29.5L25 17" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div id="slider-wrapper"></div>
+        <div id="dummy-list"></div>
       </div>
-      <div class="slider-btns">
-        <button class="prev" aria-label="Previous">
-          <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
-            <rect width="60" height="60" rx="13" fill="#D7E6FC" />
-            <path d="M35 17L20 29.5L35 42" stroke="#0B5CFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <button class="next" aria-label="Next">
-          <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
-            <rect width="60" height="60" rx="13" fill="#0B5CFF" />
-            <path d="M25 42L40 29.5L25 17" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-      </div>
-      <div id="slider-wrapper"></div>
-      <div id="dummy-list"></div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
+
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -929,5 +935,4 @@ function horizontalLoop(items, config) {
     return timeline;
 }
 </script>
-</body>
-</html>
+</body></html>
