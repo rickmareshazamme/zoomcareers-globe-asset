@@ -100,8 +100,9 @@ button {
 
 .globe-slider .slider-btns {
     position: absolute;
-    right: 50px;
-    bottom: 230px;
+    right: 30px;
+    top: 30px;
+    bottom: auto;
     display: flex;
     z-index: 3;
 }
@@ -188,7 +189,8 @@ button {
 /* ===== 481px and up ===== */
 @media (min-width: 481px) {
     .globe-slider .slider-btns {
-        bottom: 250px;
+        top: 30px;
+        bottom: auto;
     }
 
     .globe-slider .slider-item .slider-location-name {
@@ -206,7 +208,8 @@ button {
 /* ===== 768px and up ===== */
 @media (min-width: 768px) {
     .globe-slider .slider-btns {
-        bottom: 290px;
+        top: 30px;
+        bottom: auto;
     }
 
     .globe-slider #slider-wrapper {
@@ -252,7 +255,8 @@ button {
     }
 
     .globe-slider .slider-btns {
-        bottom: 290px;
+        top: 30px;
+        bottom: auto;
     }
 
     .globe-slider .globe-container {

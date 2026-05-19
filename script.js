@@ -410,7 +410,7 @@ function render() {
 }
 
 function updateSceneSize() {
-    const size = 1.37 * window.innerHeight;
+    const size = 1.8 * window.innerHeight;
     renderer.setSize(size, size);
 }
 
