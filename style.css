@@ -100,16 +100,12 @@ button {
 
 .globe-slider .slider-btns {
     position: absolute;
-    right: 50%;
-    transform: translateX(50%);
-    top: 50px;
+    right: 40px;
+    top: 40px;
     bottom: auto;
     display: flex;
     z-index: 999;
-    gap: 20px;
-}
-.globe-slider .slider-btns button {
-    transform: scale(1.3);
+    gap: 10px;
 }
 
 .globe-slider .slider-btns button {
