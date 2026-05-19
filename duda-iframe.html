@@ -1,516 +1,528 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Zoom Careers Globe</title></head><body style="margin:0;background:#B4D0F8">
-<!-- Zoom Careers — 3D Globe Slider (Duda fragment). -->
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Zoom Careers Globe</title><style>html,body{margin:0;padding:0;background:#B4D0F8}</style></head><body>
+<!--
+  Zoom Careers — 3D Globe Slider, 100% standalone Duda HTML widget.
+
+  HOW TO MAKE THIS WORK ON DUDA
+  ------------------------------
+  1. Upload all 31 asset files to Duda. The GLB sits in
+     /Users/rickmare/Desktop/zoomcareers-duda/assets/globe-geometry.glb
+     The 30 images you need: see the IMG_FILES list at the bottom of this comment.
+
+       - In Duda Editor: Content Library / Site Settings → Resources / File Manager
+         → "Upload Files". Duda accepts .png/.svg/.glb without issue.
+       - After each upload, click the file → "Copy URL". You will get URLs like
+         https://irp.cdn-website.com/<site-id>/dms3rep/multi/<filename>
+
+  2. Paste those 31 URLs into the ASSETS object below (one slot per file).
+
+  3. Drag a "HTML" widget onto your Duda page → paste this entire file → Save.
+
+  REQUIRED FILES (31 total)
+  -------------------------
+  GLB (1):
+    globe-geometry.glb                              <- already saved on your Desktop
+
+  Avatar PNGs (10):
+    Globe-Avatar-San-Jose-300x300.png
+    Globe-Avatar-London-300x300.png
+    Globe-Avatar-Bangalore-300x300.png
+    Globe-Avatar-Seattle-300x300.png
+    Globe-Avatar-Denver-300x300.png
+    Globe-Avatar-Amsterdam-300x300.png
+    Globe-Avatar-Dublin-300x300.png
+    Globe-Avatar-Singapore-300x300.png
+    Globe-Avatar-Tokyo-300x300.png
+    Globe-Avatar-Sydney-300x300.png
+
+  Slide PNGs (10):
+    San-Jose-Image-768x457.png
+    London-Image-768x457.png
+    Bangalore-Image-768x457.png
+    Seattle-Image-768x457.png
+    Denver-Image-768x457.png
+    Amsterdam-Image-768x457.png
+    Dublin-Image-768x457.png
+    Singapore-Image-768x457.png
+    Tokyo-Image-768x457.png
+    Sydney-Image-768x457.png
+
+  Country Flag SVGs (10):
+    US-Flag.svg, UK-Flag.svg, India-Flag.svg, Netherlands-Flag.svg,
+    Ireland-Flag.svg, Singapore.svg, Japan-Flag.svg, Australia-Flag.svg
+    (US-Flag used twice for San Jose/Seattle/Denver, that's why 8 SVGs cover 10 cities)
+
+  EVERYTHING ELSE (three.js, gsap, Draggable, InertiaPlugin) loads from public
+  CDNs (jsdelivr) — no other hosting needed.
+-->
+
 <style>
-.zc-globe-slider-host { min-height: 860px; height: 100vh; width: 100%; position: relative; }
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+  /* === Self-host the brand fonts so the widget works even if it ends up
+        inside an isolated context (iframe, shadow DOM, etc) where the parent
+        page's @font-face declarations can't reach. */
+  @font-face {
+    font-family: "AlmadenSans-Regular-WebXL";
+    font-display: swap;
+    src: url("https://irp.cdn-website.com/22d89a44/fonts/AlmadenSans-Regular-WebXL-43bb_400.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "AlmadenSans-SemiBold-WebXL";
+    font-display: swap;
+    src: url("https://irp.cdn-website.com/22d89a44/fonts/AlmadenSans-SemiBold-WebXL-b659_400.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "HappyDisplay-Bold";
+    font-display: swap;
+    src: url("https://irp.cdn-website.com/22d89a44/fonts/HappyDisplay-Bold-f7f7_400.woff") format("woff");
+  }
+  @font-face {
+    font-family: "HappyDisplay-SemiBold";
+    font-display: swap;
+    src: url("https://irp.cdn-website.com/22d89a44/fonts/HappyDisplay-SemiBold-80eb_400.woff2") format("woff2");
+  }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* === Section wrapper (matches original .globe-slider-section) ============ */
+  .zc-globe-section {
     background: #B4D0F8;
-}
-
-button {
-    cursor: pointer;
-    font-family: inherit;
-}
-
-/* ===== Globe Slider — base (mobile) ===== */
-.globe-slider-section {
+    padding: 108px 0 40px;
     overflow: hidden;
-}
+    position: relative;
+    width: 100%;
+  }
+  .zc-globe-section *,
+  .zc-globe-section *::before,
+  .zc-globe-section *::after { box-sizing: border-box; }
 
-.globe-slider-section h2 {
-    margin-bottom: 45px;
-}
+  /* === Text row (5/12 column on desktop in original; left-aligned 452px max) */
+  .zc-globe-section .zc-text-row {
+    padding: 55px 24px 0;
+    position: relative;
+    z-index: 2;
+  }
+  .zc-globe-section .zc-text-col {
+    max-width: 452px;
+  }
+  /* Eyebrow uses Almaden Sans like the .almaden class on the draft site */
+  .zc-globe-section .zc-eyebrow {
+    font-family: "AlmadenSans-SemiBold-WebXL", "AlmadenSans-Regular-WebXL", "Almaden Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 20px !important;
+    line-height: 28px !important;
+    font-weight: 600 !important;
+    color: #0B5CFF !important;
+    margin: 0 0 25px !important;
+    text-align: left !important;
+  }
+  /* Headline — flex column FORCES each child onto its own row regardless of
+     what Duda does to the child elements. 3 spans => 3 lines, guaranteed.
+     Colour #2874FC is pixel-sampled from the draft (matches Duda's brand h2 colour). */
+  .zc-globe-section .zc-headline {
+    font-family: "HappyDisplay-SemiBold", "HappyDisplay-Bold", "Internacional", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-weight: 700 !important;
+    font-size: clamp(28px, 3.2vw, 42px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.02em !important;
+    color: #2874FC !important;
+    margin: 0 0 35px !important;
+    max-width: 452px;
+    text-align: left;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .zc-globe-section .zc-headline > * {
+    color: inherit !important;
+    font: inherit !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  /* Lede — 20px, weight 500, 452px max (size-text-20px medium-weight max_width_set) */
+  .zc-globe-section .zc-lede {
+    font-family: "AlmadenSans-Regular-WebXL", "Almaden Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 20px !important;
+    line-height: 1.45 !important;
+    font-weight: 500 !important;
+    color: #00031F !important;
+    max-width: 452px !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  .zc-globe-section .zc-lede p {
+    margin: 0 !important;
+    font-size: 20px !important;
+    line-height: 1.45 !important;
+    font-weight: 500 !important;
+    color: #00031F !important;
+    font-family: "AlmadenSans-Regular-WebXL", "Almaden Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  }
 
-.globe-slider {
+  /* === Globe slider (sibling of text-row; pulled UP via negative margin
+        on desktop+ to overlap the text area, exactly like the original) === */
+  .zc-globe-slider {
+    position: relative;
+    z-index: 1;
     margin-left: -24px;
     margin-right: -24px;
-}
-
-.globe-slider .placeholder {
-    height: 50vh;
-}
-
-.globe-slider .globe-container {
+  }
+  .zc-globe-slider .globe-container {
     height: 100vh;
     position: relative;
-}
-
-.globe-slider .globe-wrapper {
+  }
+  .zc-globe-slider .globe-wrapper {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 50%; top: 50%;
     transform: translate(-20%, -30%);
-}
-
-@media (max-aspect-ratio: 1/1) {
-    .globe-slider .globe-wrapper {
-        transform: translate(-50%, -30%);
-    }
-}
-
-.globe-slider #globe-popups-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  }
+  @media (max-aspect-ratio: 1/1) {
+    .zc-globe-slider .globe-wrapper { transform: translate(-50%, -30%); }
+  }
+  .zc-globe-slider #globe-3d { display: block; }
+  .zc-globe-slider #globe-popups-overlay {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
-}
-
-.globe-slider .overlay-img-container {
+  }
+  .zc-globe-slider .overlay-img-container {
     position: absolute;
-    width: 65px;
-    height: 65px;
+    width: 65px; height: 65px;
     display: flex;
     transform: translate(-50%, -50%);
     pointer-events: auto;
     cursor: pointer;
-}
-
-.globe-slider .overlay-img-container .overlay-img-wrapper {
+  }
+  .zc-globe-slider .overlay-img-container .overlay-img-wrapper {
     width: 100%;
-    transition: transform 0.2s ease-in-out;
-}
+    transition: transform .2s ease-in-out;
+  }
+  .zc-globe-slider .overlay-img-container.active { z-index: 2; }
+  .zc-globe-slider .overlay-img-container.active .overlay-img-wrapper { transform: scale(1.5); }
+  .zc-globe-slider .overlay-img-container img {
+    width: 100%; border-radius: 8px; transform-origin: center center;
+  }
 
-.globe-slider .overlay-img-container.active {
-    z-index: 2;
-}
-
-.globe-slider .overlay-img-container.active .overlay-img-wrapper {
-    transform: scale(1.5);
-}
-
-.globe-slider .overlay-img-container img {
-    width: 100%;
-    border-radius: 8px;
-    transform-origin: center center;
-}
-
-.globe-slider #dummy-list {
-    position: fixed;
-    top: 0;
-    right: 0;
-    font-family: sans-serif;
-}
-
-.globe-slider .slider-btns {
+  /* Slider arrows */
+  .zc-globe-slider .slider-btns {
     position: absolute;
-    right: 40px;
-    top: 40px;
-    bottom: auto;
-    display: flex;
-    z-index: 999;
-    gap: 10px;
-}
+    right: 50px; bottom: 230px;
+    display: flex; z-index: 3;
+  }
+  .zc-globe-slider .slider-btns button {
+    padding: 0; border: none; background: none;
+    margin-left: 6px; margin-right: 6px;
+    cursor: pointer; line-height: 0;
+  }
 
-.globe-slider .slider-btns button {
-    padding: 0;
-    border: none;
-    background: none;
-    margin-left: 6px;
-    margin-right: 6px;
-    line-height: 0;
-}
-
-.globe-slider #slider-wrapper {
+  /* Slider track — base / mobile (48vw items, -50vw margin-left) */
+  .zc-globe-slider #slider-wrapper {
     position: absolute;
-    left: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
+    left: 0; bottom: 0;
+    display: flex; align-items: center; overflow: hidden;
     column-gap: 16px;
     margin-left: -50vw;
-}
-
-.globe-slider .slider-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
+  }
+  .zc-globe-slider .slider-item {
+    display: flex; align-items: center; justify-content: center;
+    margin: 0; padding: 0;
     flex-shrink: 0;
-    font-size: 21px;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.4s ease-in-out;
-    width: 48vw;
-}
-
-.globe-slider .slider-item > img {
-    width: 100%;
-    padding: 10px;
-}
-
-.globe-slider .slider-item:first-child {
-    margin-left: 16px;
-}
-
-.globe-slider .slider-item .slider-image-wrapper {
-    position: relative;
-}
-
-.globe-slider .slider-item .slider-image-wrapper > img {
-    max-width: 412px;
-    width: 100%;
-    height: auto;
-}
-
-.globe-slider .slider-item .slider-location-name {
+    font-size: 21px; cursor: pointer;
+    opacity: .8;
+    transition: opacity .4s ease-in-out;
+    width: clamp(220px, 38vw, 280px);
+  }
+  .zc-globe-slider .slider-item:first-child { margin-left: 16px; }
+  .zc-globe-slider .slider-item.active { opacity: 1; }
+  .zc-globe-slider .slider-image-wrapper { position: relative; width: 100%; }
+  .zc-globe-slider .slider-image-wrapper > img {
+    width: 100%; height: auto; display: block; border-radius: 8px;
+  }
+  .zc-globe-slider .slider-location-name {
     position: absolute;
-    bottom: 28px;
-    left: 15px;
+    bottom: 28px; left: 15px;
     padding: 8px;
     border-radius: 16px;
-    color: #2661FF !important;
+    color: #2661FF;
+    background-color: #B4D0F8;
     font-weight: 600;
     font-size: 13px;
-    background-color: #B4D0F8;
-    display: flex !important;
-    align-items: center;
-    column-gap: 4px;
-    z-index: 2;
-}
+    display: flex; align-items: center; column-gap: 4px;
+  }
+  .zc-globe-slider .slider-location-name img,
+  .zc-globe-slider .slider-location-name svg { width: 14px; height: auto; }
 
-.globe-slider .slider-item .slider-location-name img,
-.globe-slider .slider-item .slider-location-name svg {
-    width: 14px;
-    height: auto;
-}
-
-.globe-slider .slider-item.active {
-    opacity: 1;
-}
-
-/* ===== 481px and up ===== */
-@media (min-width: 481px) {
-    .globe-slider .slider-btns {
-        top: 30px;
-        bottom: auto;
+  /* 481+: bigger arrows pad and bigger pill */
+  @media (min-width: 481px) {
+    .zc-globe-slider .slider-btns { bottom: 250px; }
+    .zc-globe-slider .slider-location-name {
+      padding: 8px 15px 8px 8px;
+      font-size: 16px;
+      column-gap: 6px;
     }
+    .zc-globe-slider .slider-location-name img,
+    .zc-globe-slider .slider-location-name svg { width: 16px; }
+  }
 
-    .globe-slider .slider-item .slider-location-name {
-        padding: 8px 15px 8px 8px;
-        font-size: 16px;
-        column-gap: 6px;
+  /* 768+: pull globe-slider up to overlap text. Tighter tile width so they're not huge. */
+  @media (min-width: 768px) {
+    .zc-globe-slider { margin-top: -320px; }
+    .zc-globe-slider .slider-btns { bottom: 290px; }
+    .zc-globe-slider #slider-wrapper { column-gap: 24px; margin-left: -35vw; }
+    .zc-globe-slider .slider-item { width: clamp(240px, 22vw, 300px); }
+    .zc-globe-slider .slider-item:first-child { margin-left: 32px; }
+    .zc-globe-slider .slider-location-name {
+      bottom: 39px; left: 31px;
+      padding: 15px 30px 15px 15px;
+      border-radius: 20px;
+      font-size: 20px;
+      column-gap: 13px;
     }
+    .zc-globe-slider .slider-location-name img,
+    .zc-globe-slider .slider-location-name svg { width: 29px; }
+  }
 
-    .globe-slider .slider-item .slider-location-name img,
-    .globe-slider .slider-item .slider-location-name svg {
-        width: 16px;
-    }
-}
+  /* 992+ */
+  @media (min-width: 992px) {
+    .zc-globe-slider { margin-top: -220px; }
+    .zc-globe-slider #slider-wrapper { margin-left: 32px; }
+  }
 
-/* ===== 768px and up ===== */
-@media (min-width: 768px) {
-    .globe-slider .slider-btns {
-        top: 30px;
-        bottom: auto;
+  /* 1240+: more pull-up + container floor */
+  @media (min-width: 1240px) {
+    .zc-globe-section { padding: 108px 0 40px; }
+    .zc-globe-slider {
+      margin-top: -550px;
+      margin-left: calc((-100vw + 1139px) / 2);
+      margin-right: calc((-100vw + 1139px) / 2);
     }
-
-    .globe-slider #slider-wrapper {
-        column-gap: 32px;
-        margin-left: -35vw;
-    }
-
-    .globe-slider .slider-item {
-        width: auto;
-    }
-
-    .globe-slider .slider-item:first-child {
-        margin-left: 32px;
-    }
-
-    .globe-slider .slider-item .slider-location-name {
-        bottom: 39px;
-        left: 31px;
-        padding: 15px 30px 15px 15px;
-        border-radius: 20px;
-        font-size: 20px;
-        column-gap: 13px;
-    }
-
-    .globe-slider .slider-item .slider-location-name img,
-    .globe-slider .slider-item .slider-location-name svg {
-        width: 29px;
-    }
-}
-
-/* ===== 992px and up ===== */
-@media (min-width: 992px) {
-    .globe-slider #slider-wrapper {
-        margin-left: 32px;
-    }
-}
-
-/* ===== 1240px and up ===== */
-@media (min-width: 1240px) {
-    .globe-slider {
-        margin-left: calc((-100vw + 1139px) / 2);
-        margin-right: calc((-100vw + 1139px) / 2);
-    }
-
-    .globe-slider .slider-btns {
-        top: 30px;
-        bottom: auto;
-    }
-
-    .globe-slider .globe-container {
-        min-height: 860px;
-    }
-}
+    .zc-globe-slider .globe-container { min-height: 860px; }
+    .zc-globe-slider .slider-btns { bottom: 290px; }
+  }
 </style>
+
+<section class="zc-globe-section" data-zc-version="v8">
+  <div class="zc-text-row">
+    <div class="zc-text-col">
+      <h3 class="zc-eyebrow">Our Locations</h3>
+      <h2 class="zc-headline"><span>Imagine what you</span><span>can do&mdash;</span><span>worldwide</span></h2>
+      <div class="zc-lede"><p>From San Jose to Singapore, Zoomies are helping people work happy around the world. Ready to join us? Find your fit and apply today.</p></div>
+    </div>
+  </div>
+
+  <div class="zc-globe-slider">
+    <div class="globe-container">
+      <div class="globe-wrapper">
+        <canvas id="globe-3d"></canvas>
+        <div id="globe-popups-overlay"></div>
+      </div>
+
+      <div class="slider-btns">
+        <button class="prev" aria-label="Previous">
+          <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
+            <rect width="60" height="60" rx="13" fill="#D7E6FC"/>
+            <path d="M35 17L20 29.5L35 42" stroke="#0B5CFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="next" aria-label="Next">
+          <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
+            <rect width="60" height="60" rx="13" fill="#0B5CFF"/>
+            <path d="M25 42L40 29.5L25 17" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="slider-wrapper"></div>
+    </div>
+  </div>
+</section>
+
+<!--
+  Duda site 22d89a44 (zoomcareersdev.shazamme.site) — all 30 image/flag assets
+  resolved via Duda's CDN, GLB hosted on jsdelivr from a public GitHub repo
+  (github.com/rickmareshazamme/zoomcareers-globe-asset). 100% standalone.
+-->
+<script>
+  window.ZC_GLOBE_ASSETS = {
+    glb: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/model/globe-geometry.glb",
+    locations: [
+      { name: 'San Jose | Global HQ', lat:  37, lon: -125,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-San-Jose-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/San-Jose-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg" },
+      { name: 'London',               lat:  60, lon: -5,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-London-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/London-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/UK-Flag.svg" },
+      { name: 'Bangalore',            lat:  19, lon: 72,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Bangalore-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Bangalore-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/India-Flag.svg" },
+      { name: 'Seattle',              lat:  53, lon: -125,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Seattle-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Seattle-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg" },
+      { name: 'Denver',               lat:  39, lon: -104,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Denver-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Denver-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg" },
+      { name: 'Amsterdam',            lat:  55, lon: 8,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Amsterdam-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Amsterdam-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Netherlands-Flag.svg" },
+      { name: 'Dublin',               lat:  54, lon: -9,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Dublin-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Dublin-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Ireland-Flag.svg" },
+      { name: 'Singapore',            lat:   1, lon: 103,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Singapore-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Singapore-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Singapore.svg" },
+      { name: 'Tokyo',                lat:  35, lon: 139,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Tokyo-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Tokyo-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Japan-Flag.svg" },
+      { name: 'Sydney',               lat: -33, lon: 150,
+        avatar: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Sydney-300x300.png",
+        slide:  "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Sydney-Image-768x457.png",
+        flag:   "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Australia-Flag.svg" }
+    ]
+  };
+</script>
+
+<!-- All libraries load from public jsdelivr CDN.
+     GSAP 3.13+ made InertiaPlugin and Draggable free, so no licensed assets are required. -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Draggable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/InertiaPlugin.min.js"></script>
+
 <script type="importmap">
-{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.167.1/examples/jsm/"}}
-</script>
-<div class="zc-globe-slider-host">
-  <section class="globe-slider-section">
-    <div class="globe-slider">
-      <div class="globe-container">
-        <div class="globe-wrapper"><canvas id="globe-3d"></canvas><div id="globe-popups-overlay"></div></div>
-        <div class="slider-btns">
-          <button class="prev" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="13" fill="#D7E6FC"/><path d="M35 17L20 29.5L35 42" stroke="#0B5CFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <button class="next" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none"><rect width="60" height="60" rx="13" fill="#0B5CFF"/><path d="M25 42L40 29.5L25 17" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        </div>
-        <div id="slider-wrapper"></div>
-        <div id="dummy-list"></div>
-      </div>
-    </div>
-  </section>
-</div>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-let globeLoaded = false;
-let sliderInitialized = false;
-
-const containerEl = document.querySelector(".globe-container");
-const canvas3D = containerEl.querySelector("#globe-3d");
-const popupsContainer = containerEl.querySelector("#globe-popups-overlay");
-const sliderWrapperEL = document.querySelector("#slider-wrapper");
-
-let renderer, scene, camera, orbit, lightHolder, sea, wrapper;
-
-let sliderItems;
-let movingToSliderSelection = false;
-let sliderActiveElement, sliderLoop;
-
-const locations = [{
-    name: 'San Jose | Global HQ',
-    location: coordToPos(37, -125),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-San-Jose-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/San-Jose-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg"
-}, {
-    name: 'London',
-    location: coordToPos(60, -5),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-London-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/London-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/UK-Flag.svg"
-}, {
-    name: 'Bangalore',
-    location: coordToPos(19, 72),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Bangalore-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Bangalore-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/India-Flag.svg"
-}, {
-    name: 'Seattle',
-    location: coordToPos(53, -125),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Seattle-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Seattle-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg"
-}, {
-    name: 'Denver',
-    location: coordToPos(39, -104),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Denver-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Denver-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/US-Flag.svg"
-}, {
-    name: 'Amsterdam',
-    location: coordToPos(55, 8),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Amsterdam-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Amsterdam-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Netherlands-Flag.svg"
-}, {
-    name: 'Dublin',
-    location: coordToPos(54, -9),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Dublin-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Dublin-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Ireland-Flag.svg"
-}, {
-    name: 'Singapore',
-    location: coordToPos(1, 103),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Singapore-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Singapore-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Singapore.svg"
-}, {
-    name: 'Tokyo',
-    location: coordToPos(35, 139),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Tokyo-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Tokyo-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Japan-Flag.svg"
-}, {
-    name: 'Sydney',
-    location: coordToPos(-33, 150),
-    midScreenDist: 0,
-    avatarPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/avatars/Globe-Avatar-Sydney-300x300.png",
-    sliderPicURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/images/Sydney-Image-768x457.png",
-    countryIconURL: "https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/flags/Australia-Flag.svg"
-}];
-
-initScene();
-cretePointers();
-render();
-window.addEventListener("resize", updateSceneSize);
-
-window.addEventListener('load', function () {
-    if (globeLoaded && !sliderInitialized) {
-        sliderItems = createSliderItems();
-
-        setTimeout(() => {
-            setupSlider();
-            sliderInitialized = true;
-        }, 300);
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.167.1/examples/jsm/"
     }
-});
+  }
+</script>
 
-function createSliderItems() {
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+  const CFG = window.ZC_GLOBE_ASSETS;
+  const root = document.querySelector(".zc-globe-slider");
+  const containerEl = root.querySelector(".globe-container");
+  const canvas3D = containerEl.querySelector("#globe-3d");
+  const popupsContainer = containerEl.querySelector("#globe-popups-overlay");
+  const sliderWrapperEL = root.querySelector("#slider-wrapper");
+
+  let renderer, scene, camera, orbit, lightHolder, wrapper;
+  let sliderItems, sliderActiveElement, sliderLoop;
+  let globeLoaded = false, sliderInitialized = false;
+
+  const locations = CFG.locations.map(l => ({
+    name: l.name,
+    location: coordToPos(l.lat, l.lon),
+    midScreenDist: 0,
+    avatarPicURL:   l.avatar,
+    sliderPicURL:   l.slide,
+    countryIconURL: l.flag
+  }));
+
+  initScene();
+  cretePointers();
+  render();
+  window.addEventListener("resize", updateSceneSize);
+
+  window.addEventListener('load', () => {
+    if (globeLoaded && !sliderInitialized) {
+      sliderItems = createSliderItems();
+      setTimeout(() => { setupSlider(); sliderInitialized = true; }, 300);
+    }
+  });
+
+  function createSliderItems() {
     locations.forEach((location, idx) => {
-        const sliderItem = document.createElement('div');
-        sliderItem.classList.add('slider-item');
-        sliderItem.setAttribute("data-location-idx", idx);
-        sliderItem.innerHTML = `
-            <div class="slider-image-wrapper">
-                <img src="${location.sliderPicURL}" alt="${location.name}" />
-                <div class="slider-location-name"><img src="${location.countryIconURL}" alt="${location.name}" />${location.name}</div>
-            </div>
-        `;
-        sliderWrapperEL.appendChild(sliderItem);
+      const item = document.createElement('div');
+      item.classList.add('slider-item');
+      item.setAttribute("data-location-idx", idx);
+      item.innerHTML = `
+        <div class="slider-image-wrapper">
+          <img src="${location.sliderPicURL}" alt="${location.name}" />
+          <div class="slider-location-name"><img src="${location.countryIconURL}" alt="${location.name}" />${location.name}</div>
+        </div>`;
+      sliderWrapperEL.appendChild(item);
     });
-    return gsap.utils.toArray(".slider-item");
-}
+    return gsap.utils.toArray(root.querySelectorAll(".slider-item"));
+  }
 
-function setupSlider() {
+  function setupSlider() {
     sliderLoop = horizontalLoop(sliderItems, {
-        paused: true,
-        draggable: true,
-        center: false,
-        onChange: (element, index) => {
-            sliderActiveElement && sliderActiveElement.classList.remove("active");
+      paused: true, draggable: true, center: false,
+      onChange: (element, index) => {
+        sliderActiveElement && sliderActiveElement.classList.remove("active");
+        const newIndex = index + 1 < sliderItems.length ? index + 1 : 0;
+        const targetElement = sliderItems[newIndex];
+        targetElement.classList.add("active");
+        sliderActiveElement = targetElement;
 
-            const newIndex = index + 1 < sliderItems.length ? index + 1 : 0;
-            const targetElement = sliderItems[newIndex];
-            targetElement.classList.add("active");
-            sliderActiveElement = targetElement;
+        const activeLocationIndex = targetElement.getAttribute("data-location-idx");
+        selectLocationFromSlider(locations[activeLocationIndex], 0);
 
-            const activeLocationIndex = targetElement.getAttribute("data-location-idx");
-            selectLocationFromSlider(locations[activeLocationIndex], 0);
-
-            if (document.querySelector(".overlay-img-container.active")) {
-                document.querySelector(".overlay-img-container.active").classList.remove("active");
-            }
-            locations[activeLocationIndex].popup.classList.add("active");
-        }
+        const activePopup = root.querySelector(".overlay-img-container.active");
+        if (activePopup) activePopup.classList.remove("active");
+        locations[activeLocationIndex].popup.classList.add("active");
+      }
     });
 
     sliderItems.forEach((item, i) => item.addEventListener("click", () => {
-        sliderItems[i].classList.add("active");
-        sliderLoop.toIndex((i - 1), { duration: 0.8, ease: "power1.inOut" });
-        selectLocationFromSlider(locations[i - 1], 0);
+      sliderItems[i].classList.add("active");
+      sliderLoop.toIndex((i - 1), { duration: 0.8, ease: "power1.inOut" });
+      selectLocationFromSlider(locations[i - 1], 0);
     }));
 
-    document.querySelector(".next").addEventListener("click", () => {
-        sliderLoop.next({ duration: 0.65, ease: "power1.inOut" });
-    });
-    document.querySelector(".prev").addEventListener("click", () => {
-        sliderLoop.previous({ duration: 0.65, ease: "power1.inOut" });
-    });
-}
+    root.querySelector(".next").addEventListener("click", () => sliderLoop.next({ duration: 0.65, ease: "power1.inOut" }));
+    root.querySelector(".prev").addEventListener("click", () => sliderLoop.previous({ duration: 0.65, ease: "power1.inOut" }));
+  }
 
-function selectLocationFromSlider(location, delay = 0) {
+  function selectLocationFromSlider(location, delay = 0) {
     if (!location) return;
-
     gsap.killTweensOf(camera.position);
-
     const distance = camera.position.length();
     const targetDirection = location.mesh.position.clone().normalize();
-
     const offset = new THREE.Vector3(0, -0.45, 0);
     const targetPosition = targetDirection.add(offset).normalize().multiplyScalar(distance);
-
     const travelDistance = camera.position.distanceTo(targetPosition);
     const duration = THREE.MathUtils.clamp(travelDistance / 3, 1.5, 2.5);
 
     gsap.to(camera.position, {
-        delay,
-        duration,
-        x: targetPosition.x,
-        y: targetPosition.y,
-        z: targetPosition.z,
-        ease: "power2.inOut",
-        onUpdate: () => {
-            const currentDirection = camera.position.clone().normalize();
-            camera.position.copy(currentDirection.multiplyScalar(distance));
-            camera.lookAt(new THREE.Vector3(0, 0, 0));
-            orbit.update();
-        },
-        onStart: () => {
-            movingToSliderSelection = true;
-        },
-        onComplete: () => {
-            movingToSliderSelection = false;
-        }
+      delay, duration,
+      x: targetPosition.x, y: targetPosition.y, z: targetPosition.z,
+      ease: "power2.inOut",
+      onUpdate: () => {
+        const currentDirection = camera.position.clone().normalize();
+        camera.position.copy(currentDirection.multiplyScalar(distance));
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        orbit.update();
+      }
     });
-}
+  }
 
-function initScene() {
-    renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        canvas: canvas3D,
-        alpha: true
-    });
+  function initScene() {
+    renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas3D, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     scene = new THREE.Scene();
-
-    camera = new THREE.PerspectiveCamera(45, 1, 0.01, 100);
+    camera = new THREE.PerspectiveCamera(45, 1, .01, 100);
     camera.position.set(0, 0, 3);
 
     wrapper = new THREE.Group();
     scene.add(wrapper);
-
     updateSceneSize();
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2);
-    scene.add(ambientLight);
+    scene.add(new THREE.AmbientLight(0xffffff, 2));
 
     const sideLight = new THREE.SpotLight(0xffffff, 6);
     sideLight.position.set(1, -1, 2);
+
     const topLight = new THREE.SpotLight(0xffffff, 6);
     topLight.position.set(-1.3, 1.1, 2.3);
     topLight.castShadow = true;
@@ -522,9 +534,8 @@ function initScene() {
     topLight.shadow.camera.right = 1;
     topLight.shadow.camera.top = 1;
     topLight.shadow.camera.bottom = -1;
-    topLight.shadow.bias = -0.0001;
+    topLight.shadow.bias = -.0001;
     topLight.shadow.radius = 5;
-    topLight.castShadow = true;
 
     lightHolder = new THREE.Group();
     lightHolder.add(sideLight);
@@ -535,381 +546,300 @@ function initScene() {
     orbit.enableZoom = false;
     orbit.enablePan = false;
     orbit.enableDamping = true;
-    orbit.minPolarAngle = 0.36 * Math.PI;
+    orbit.minPolarAngle = .36 * Math.PI;
     orbit.maxPolarAngle = Math.PI;
 
     orbit.addEventListener('start', () => {
-        if (document.querySelector(".slider-item.active")) {
-            document.querySelector(".slider-item.active").classList.remove("active");
-        }
-        if (document.querySelector(".overlay-img-container.active")) {
-            document.querySelector(".overlay-img-container.active").classList.remove("active");
-        }
+      const activeSlide = root.querySelector(".slider-item.active");
+      if (activeSlide) activeSlide.classList.remove("active");
+      const activePopup = root.querySelector(".overlay-img-container.active");
+      if (activePopup) activePopup.classList.remove("active");
     });
 
-    const gltfLoader = new GLTFLoader();
-    gltfLoader.load(
-        'https://cdn.jsdelivr.net/gh/rickmareshazamme/zoomcareers-globe-asset@v1.0.0/assets/model/globe-geometry.glb',
-        (gltf) => {
-            const terra = gltf.scene.children[0];
-            terra.castShadow = true;
-            wrapper.add(terra);
+    new GLTFLoader().load(CFG.glb, (gltf) => {
+      const terra = gltf.scene.children[0];
+      terra.castShadow = true;
+      wrapper.add(terra);
 
-            terra.material = new THREE.MeshPhysicalMaterial({
-                metalness: 0,
-                roughness: 0.34,
-                ior: 0.78,
-                reflectivity: 0.5,
-                onBeforeCompile: (shader) => {
-                    shader.vertexShader = shader.vertexShader.replace(
-                        '#include <common>',
-                        `#include <common>\n varying vec3 vPosition;`
-                    );
+      terra.material = new THREE.MeshPhysicalMaterial({
+        metalness: 0, roughness: .34, ior: .78, reflectivity: .5,
+        onBeforeCompile: (shader) => {
+          shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>\n varying vec3 vPosition;`);
+          shader.vertexShader = shader.vertexShader.replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>\n vPosition = (modelMatrix * vec4(position, 1.0)).xyz;`);
+          shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>\n varying vec3 vPosition;`);
+          shader.fragmentShader = shader.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', `
+            vec3 color = vec3(.2, 1., .1);
+            vec3 color2 = vec3(.6, 1.2, .0);
+            color = mix(color, color2, 1.2 * vPosition.y);
+            vec4 diffuseColor = vec4(.7 * color, opacity);
+          `);
+        }
+      });
 
-                    shader.vertexShader = shader.vertexShader.replace(
-                        '#include <beginnormal_vertex>',
-                        `#include <beginnormal_vertex>\n vPosition = (modelMatrix * vec4(position, 1.0)).xyz;`
-                    );
+      const sea = gltf.scene.children[0];
+      sea.receiveShadow = true;
+      wrapper.add(sea);
+      sea.material = new THREE.MeshPhysicalMaterial({
+        metalness: .2, roughness: .6, reflectivity: .7,
+        onBeforeCompile: (shader) => {
+          shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>\n varying vec3 vPosition;`);
+          shader.vertexShader = shader.vertexShader.replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>\n vPosition = (modelMatrix * vec4(position, 1.0)).xyz;`);
+          shader.fragmentShader = shader.fragmentShader.replace('#include <common>', `#include <common>\n varying vec3 vPosition;`);
+          shader.fragmentShader = shader.fragmentShader.replace('vec4 diffuseColor = vec4( diffuse, opacity );', `
+            vec3 color = vec3(.063, .69, .996);
+            vec3 color2 = vec3(.0, .5, 1.);
+            color = mix(color, color2, vNormal.z);
+            vec4 diffuseColor = vec4(color, opacity);
+          `);
+        }
+      });
 
-                    shader.fragmentShader = shader.fragmentShader.replace(
-                        '#include <common>',
-                        `#include <common>\n varying vec3 vPosition;`
-                    );
-
-                    shader.fragmentShader = shader.fragmentShader.replace(
-                        'vec4 diffuseColor = vec4( diffuse, opacity );',
-                        `
-                            vec3 color = vec3(.2, 1., .1);
-                            vec3 color2 = vec3(.6, 1.2, .0);
-
-                            color = mix(color, color2, 1.2 * vPosition.y);
-
-                            vec4 diffuseColor = vec4(.7 * color, opacity);
-                        `
-                    );
-                }
-            });
-
-            const sea = gltf.scene.children[0];
-            sea.receiveShadow = true;
-            wrapper.add(sea);
-
-            sea.material = new THREE.MeshPhysicalMaterial({
-                metalness: 0.2,
-                roughness: 0.6,
-                reflectivity: 0.7,
-                onBeforeCompile: (shader) => {
-                    shader.vertexShader = shader.vertexShader.replace(
-                        '#include <common>',
-                        `#include <common>\n varying vec3 vPosition;`
-                    );
-
-                    shader.vertexShader = shader.vertexShader.replace(
-                        '#include <beginnormal_vertex>',
-                        `#include <beginnormal_vertex>\n vPosition = (modelMatrix * vec4(position, 1.0)).xyz;`
-                    );
-
-                    shader.fragmentShader = shader.fragmentShader.replace(
-                        '#include <common>',
-                        `#include <common>\n varying vec3 vPosition;`
-                    );
-
-                    shader.fragmentShader = shader.fragmentShader.replace(
-                        'vec4 diffuseColor = vec4( diffuse, opacity );',
-                        `
-                            vec3 color = vec3(.063, .69, .996);
-                            vec3 color2 = vec3(.0, .5, 1.);
-                            color = mix(color, color2, vNormal.z);
-                            vec4 diffuseColor = vec4(color, opacity);
-                        `
-                    );
-                }
-            });
-
-            globeLoaded = true;
-
-            if (!sliderInitialized) {
-                sliderItems = createSliderItems();
-
-                setTimeout(() => {
-                    setupSlider();
-                    sliderInitialized = true;
-                }, 300);
-            }
-        });
-}
-
-function cretePointers() {
-    const pointerGeometry = new THREE.IcosahedronGeometry(0.1, 3);
-    const pointerMaterial = new THREE.MeshBasicMaterial({
-        visible: false
+      globeLoaded = true;
+      if (!sliderInitialized) {
+        sliderItems = createSliderItems();
+        setTimeout(() => { setupSlider(); sliderInitialized = true; }, 300);
+      }
     });
+  }
 
-    for (let lIdx = 0; lIdx < locations.length; lIdx++) {
-        const pointer = new THREE.Mesh(pointerGeometry, pointerMaterial);
-        pointer.position.set(locations[lIdx].location.x, locations[lIdx].location.y, locations[lIdx].location.z);
-        pointer.name = lIdx;
-        wrapper.add(pointer);
-        locations[lIdx].mesh = pointer;
+  function cretePointers() {
+    const pointerGeometry = new THREE.IcosahedronGeometry(.1, 3);
+    const pointerMaterial = new THREE.MeshBasicMaterial({ visible: false });
 
-        locations[lIdx].popup = document.createElement("div");
-        locations[lIdx].popup.classList.add("overlay-img-container");
-        locations[lIdx].popupWrapper = document.createElement("div");
-        locations[lIdx].popupWrapper.classList.add("overlay-img-wrapper");
-        const img = document.createElement("img");
-        locations[lIdx].popupImg = img;
-        img.src = locations[lIdx].avatarPicURL;
-        locations[lIdx].popupWrapper.appendChild(img);
-        locations[lIdx].popup.appendChild(locations[lIdx].popupWrapper);
-        popupsContainer.appendChild(locations[lIdx].popup);
+    for (let i = 0; i < locations.length; i++) {
+      const pointer = new THREE.Mesh(pointerGeometry, pointerMaterial);
+      pointer.position.set(locations[i].location.x, locations[i].location.y, locations[i].location.z);
+      pointer.name = i;
+      wrapper.add(pointer);
+      locations[i].mesh = pointer;
+
+      const popup = document.createElement("div");
+      popup.classList.add("overlay-img-container");
+      const popupWrapper = document.createElement("div");
+      popupWrapper.classList.add("overlay-img-wrapper");
+      const img = document.createElement("img");
+      img.src = locations[i].avatarPicURL;
+      popupWrapper.appendChild(img);
+      popup.appendChild(popupWrapper);
+      popupsContainer.appendChild(popup);
+
+      locations[i].popup = popup;
+      locations[i].popupWrapper = popupWrapper;
+      locations[i].popupImg = img;
     }
 
     locations.forEach((l, i) => {
-        l.popup.onclick = function () {
-            sliderLoop.toIndex((i - 1), { duration: 0.5, ease: "power1.inOut" });
-        };
+      l.popup.onclick = () => sliderLoop && sliderLoop.toIndex((i - 1), { duration: 0.5, ease: "power1.inOut" });
     });
-}
+  }
 
-function render() {
+  function render() {
     orbit.update();
     lightHolder.quaternion.copy(camera.quaternion);
 
     locations.forEach(l => {
-        let activePointPosition = l.mesh.position.clone();
-        const activePointPositionProjected = activePointPosition.clone();
-        activePointPositionProjected.project(camera);
+      let activePointPosition = l.mesh.position.clone();
+      const projected = activePointPosition.clone();
+      projected.project(camera);
 
-        const matrixWorldInverse = orbit.object.matrixWorldInverse;
-        activePointPosition.applyMatrix4(matrixWorldInverse);
+      const matrixWorldInverse = orbit.object.matrixWorldInverse;
+      activePointPosition.applyMatrix4(matrixWorldInverse);
 
-        const x = (activePointPositionProjected.x + 1) * popupsContainer.offsetWidth * 0.5;
-        const y = (1 - activePointPositionProjected.y) * popupsContainer.offsetHeight * 0.5;
+      const x = (projected.x + 1) * popupsContainer.offsetWidth * .5;
+      const y = (1 - projected.y) * popupsContainer.offsetHeight * .5;
 
-        l.popup.style.left = x + "px";
-        l.popup.style.top = y + "px";
+      l.popup.style.left = x + "px";
+      l.popup.style.top = y + "px";
+      l.popup.style.opacity = THREE.MathUtils.clamp(12 * (activePointPosition.z + 2.5), 0, 1);
 
-        l.popup.style.opacity = THREE.MathUtils.clamp(12 * (activePointPosition.z + 2.5), 0, 1);
-
-        l.midScreenDist = Math.abs(x - popupsContainer.offsetWidth * 0.5);
-        if (l.popup.style.opacity < 0.1) {
-            l.midScreenDist = 10000;
-        }
-        l.popup.style.display = l.popup.style.opacity < 0.15 ? "none" : "block";
+      l.midScreenDist = Math.abs(x - popupsContainer.offsetWidth * .5);
+      if (parseFloat(l.popup.style.opacity) < .1) l.midScreenDist = 10000;
+      l.popup.style.display = parseFloat(l.popup.style.opacity) < .15 ? "none" : "block";
     });
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
-}
+  }
 
-function updateSceneSize() {
-    const size = 1.8 * window.innerHeight;
+  function updateSceneSize() {
+    const size = 1.37 * window.innerHeight;
     renderer.setSize(size, size);
-}
+  }
 
-function coordToPos(lat, lon) {
+  function coordToPos(lat, lon) {
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lon + 90) * (Math.PI / 180);
     return new THREE.Vector3(
-        -Math.sin(phi) * Math.cos(theta),
-        Math.cos(phi),
-        Math.sin(phi) * Math.sin(theta)
+      -Math.sin(phi) * Math.cos(theta),
+       Math.cos(phi),
+       Math.sin(phi) * Math.sin(theta)
     );
-}
+  }
 
-function horizontalLoop(items, config) {
+  function horizontalLoop(items, config) {
     let timeline;
     items = gsap.utils.toArray(items);
     config = config || {};
     gsap.context(() => {
-        let onChange = config.onChange,
-            lastIndex = 0,
-            tl = gsap.timeline({
-                repeat: config.repeat,
-                onUpdate: onChange && function () {
-                    let i = tl.closestIndex();
-                    if (lastIndex !== i) {
-                        lastIndex = i;
-                        onChange(items[i], i);
-                    }
-                },
-                paused: config.paused,
-                defaults: { ease: "none" },
-                onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100)
-            }),
-            length = items.length,
-            startX = items[0].offsetLeft,
-            times = [],
-            widths = [],
-            spaceBefore = [],
-            xPercents = [],
-            curIndex = 0,
-            indexIsDirty = false,
-            center = config.center,
-            pixelsPerSecond = (config.speed || 1) * 30,
-            snap = config.snap === false ? v => v : gsap.utils.snap(config.snap || 1),
-            timeOffset = 0,
-            container = center === true ? items[0].parentNode : gsap.utils.toArray(center)[0] || items[0].parentNode,
-            totalWidth,
-            getTotalWidth = () => items[length - 1].offsetLeft + xPercents[length - 1] / 100 * widths[length - 1] - startX + spaceBefore[0] + items[length - 1].offsetWidth * gsap.getProperty(items[length - 1], "scaleX") + (parseFloat(config.paddingRight) || 0),
-            populateWidths = () => {
-                let b1 = container.getBoundingClientRect(), b2;
-                items.forEach((el, i) => {
-                    widths[i] = parseFloat(gsap.getProperty(el, "width", "px"));
-                    xPercents[i] = snap(parseFloat(gsap.getProperty(el, "x", "px")) / widths[i] * 100 + gsap.getProperty(el, "xPercent"));
-                    b2 = el.getBoundingClientRect();
-                    spaceBefore[i] = b2.left - (i ? b1.right : b1.left);
-                    b1 = b2;
-                });
-                gsap.set(items, {
-                    xPercent: i => xPercents[i]
-                });
-                totalWidth = getTotalWidth();
-            },
-            timeWrap,
-            populateOffsets = () => {
-                timeOffset = center ? tl.duration() * (container.offsetWidth / 2) / totalWidth : 0;
-                center && times.forEach((t, i) => {
-                    times[i] = timeWrap(tl.labels["label" + i] + tl.duration() * widths[i] / 2 / totalWidth - timeOffset);
-                });
-            },
-            getClosest = (values, value, wrap) => {
-                let i = values.length,
-                    closest = 1e10,
-                    index = 0, d;
-                while (i--) {
-                    d = Math.abs(values[i] - value);
-                    if (d > wrap / 2) {
-                        d = wrap - d;
-                    }
-                    if (d < closest) {
-                        closest = d;
-                        index = i;
-                    }
-                }
-                return index;
-            },
-            populateTimeline = () => {
-                let i, item, curX, distanceToStart, distanceToLoop;
-                tl.clear();
-                for (i = 0; i < length; i++) {
-                    item = items[i];
-                    curX = xPercents[i] / 100 * widths[i];
-                    distanceToStart = item.offsetLeft + curX - startX + spaceBefore[0];
-                    distanceToLoop = distanceToStart + widths[i] * gsap.getProperty(item, "scaleX");
-                    tl.to(item, { xPercent: snap((curX - distanceToLoop) / widths[i] * 100), duration: distanceToLoop / pixelsPerSecond }, 0)
-                        .fromTo(item, { xPercent: snap((curX - distanceToLoop + totalWidth) / widths[i] * 100) }, { xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false }, distanceToLoop / pixelsPerSecond)
-                        .add("label" + i, distanceToStart / pixelsPerSecond);
-                    times[i] = distanceToStart / pixelsPerSecond;
-                }
-                timeWrap = gsap.utils.wrap(0, tl.duration());
-            },
-            refresh = (deep) => {
-                let progress = tl.progress();
-                tl.progress(0, true);
-                populateWidths();
-                deep && populateTimeline();
-                populateOffsets();
-                deep && tl.draggable && tl.paused() ? tl.time(times[curIndex], true) : tl.progress(progress, true);
-            },
-            onResize = () => refresh(true),
-            proxy;
-        gsap.set(items, { x: 0 });
-        populateWidths();
-        populateTimeline();
-        populateOffsets();
-        window.addEventListener("resize", onResize);
+      let onChange = config.onChange,
+        lastIndex = 0,
+        tl = gsap.timeline({
+          repeat: config.repeat,
+          onUpdate: onChange && function () {
+            let i = tl.closestIndex();
+            if (lastIndex !== i) { lastIndex = i; onChange(items[i], i); }
+          },
+          paused: config.paused,
+          defaults: { ease: "none" },
+          onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100)
+        }),
+        length = items.length,
+        startX = items[0].offsetLeft,
+        times = [], widths = [], spaceBefore = [], xPercents = [],
+        curIndex = 0,
+        indexIsDirty = false,
+        center = config.center,
+        pixelsPerSecond = (config.speed || 1) * 30,
+        snap = config.snap === false ? v => v : gsap.utils.snap(config.snap || 1),
+        timeOffset = 0,
+        container = center === true ? items[0].parentNode : gsap.utils.toArray(center)[0] || items[0].parentNode,
+        totalWidth,
+        getTotalWidth = () => items[length - 1].offsetLeft + xPercents[length - 1] / 100 * widths[length - 1] - startX + spaceBefore[0] + items[length - 1].offsetWidth * gsap.getProperty(items[length - 1], "scaleX") + (parseFloat(config.paddingRight) || 0),
+        populateWidths = () => {
+          let b1 = container.getBoundingClientRect(), b2;
+          items.forEach((el, i) => {
+            widths[i] = parseFloat(gsap.getProperty(el, "width", "px"));
+            xPercents[i] = snap(parseFloat(gsap.getProperty(el, "x", "px")) / widths[i] * 100 + gsap.getProperty(el, "xPercent"));
+            b2 = el.getBoundingClientRect();
+            spaceBefore[i] = b2.left - (i ? b1.right : b1.left);
+            b1 = b2;
+          });
+          gsap.set(items, { xPercent: i => xPercents[i] });
+          totalWidth = getTotalWidth();
+        },
+        timeWrap,
+        populateOffsets = () => {
+          timeOffset = center ? tl.duration() * (container.offsetWidth / 2) / totalWidth : 0;
+          center && times.forEach((t, i) => {
+            times[i] = timeWrap(tl.labels["label" + i] + tl.duration() * widths[i] / 2 / totalWidth - timeOffset);
+          });
+        },
+        getClosest = (values, value, wrap) => {
+          let i = values.length, closest = 1e10, index = 0, d;
+          while (i--) {
+            d = Math.abs(values[i] - value);
+            if (d > wrap / 2) d = wrap - d;
+            if (d < closest) { closest = d; index = i; }
+          }
+          return index;
+        },
+        populateTimeline = () => {
+          let i, item, curX, distanceToStart, distanceToLoop;
+          tl.clear();
+          for (i = 0; i < length; i++) {
+            item = items[i];
+            curX = xPercents[i] / 100 * widths[i];
+            distanceToStart = item.offsetLeft + curX - startX + spaceBefore[0];
+            distanceToLoop = distanceToStart + widths[i] * gsap.getProperty(item, "scaleX");
+            tl.to(item, { xPercent: snap((curX - distanceToLoop) / widths[i] * 100), duration: distanceToLoop / pixelsPerSecond }, 0)
+              .fromTo(item, { xPercent: snap((curX - distanceToLoop + totalWidth) / widths[i] * 100) }, { xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false }, distanceToLoop / pixelsPerSecond)
+              .add("label" + i, distanceToStart / pixelsPerSecond);
+            times[i] = distanceToStart / pixelsPerSecond;
+          }
+          timeWrap = gsap.utils.wrap(0, tl.duration());
+        },
+        refresh = (deep) => {
+          let progress = tl.progress();
+          tl.progress(0, true);
+          populateWidths();
+          deep && populateTimeline();
+          populateOffsets();
+          deep && tl.draggable && tl.paused() ? tl.time(times[curIndex], true) : tl.progress(progress, true);
+        },
+        onResize = () => refresh(true),
+        proxy;
+      gsap.set(items, { x: 0 });
+      populateWidths();
+      populateTimeline();
+      populateOffsets();
+      window.addEventListener("resize", onResize);
 
-        function toIndex(index, vars) {
-            vars = vars || {};
-            (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length);
-            let newIndex = gsap.utils.wrap(0, length, index),
-                time = times[newIndex];
-            if (time > tl.time() !== index > curIndex && index !== curIndex) {
-                time += tl.duration() * (index > curIndex ? 1 : -1);
-            }
-            if (time < 0 || time > tl.duration()) {
-                vars.modifiers = { time: timeWrap };
-            }
-            curIndex = newIndex;
-            vars.overwrite = true;
-            gsap.killTweensOf(proxy);
-            return vars.duration === 0 ? tl.time(timeWrap(time)) : tl.tweenTo(time, vars);
+      function toIndex(index, vars) {
+        vars = vars || {};
+        (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length);
+        let newIndex = gsap.utils.wrap(0, length, index),
+          time = times[newIndex];
+        if (time > tl.time() !== index > curIndex && index !== curIndex) {
+          time += tl.duration() * (index > curIndex ? 1 : -1);
         }
+        if (time < 0 || time > tl.duration()) vars.modifiers = { time: timeWrap };
+        curIndex = newIndex;
+        vars.overwrite = true;
+        gsap.killTweensOf(proxy);
+        return vars.duration === 0 ? tl.time(timeWrap(time)) : tl.tweenTo(time, vars);
+      }
 
-        tl.toIndex = (index, vars) => toIndex(index, vars);
-        tl.closestIndex = setCurrent => {
-            let index = getClosest(times, tl.time(), tl.duration());
-            if (setCurrent) {
-                curIndex = index;
-                indexIsDirty = false;
-            }
-            return index;
-        };
-        tl.current = () => indexIsDirty ? tl.closestIndex(true) : curIndex;
-        tl.next = vars => toIndex(tl.current() + 1, vars);
-        tl.previous = vars => toIndex(tl.current() - 1, vars);
-        tl.times = times;
-        tl.progress(1, true).progress(0, true);
-        if (config.reversed) {
-            tl.vars.onReverseComplete();
-            tl.reverse();
-        }
-        if (config.draggable && typeof (Draggable) === "function") {
-            proxy = document.createElement("div");
-            let wrap = gsap.utils.wrap(0, 1),
-                ratio, startProgress, draggable, dragSnap, lastSnap, initChangeX, wasPlaying,
-                align = () => tl.progress(wrap(startProgress + (draggable.startX - draggable.x) * ratio)),
-                syncIndex = () => tl.closestIndex(true);
-            typeof (InertiaPlugin) === "undefined" && console.warn("InertiaPlugin required for momentum-based scrolling and snapping. https://greensock.com/club");
-            draggable = Draggable.create(proxy, {
-                trigger: items[0].parentNode,
-                type: "x",
-                onPressInit() {
-                    let x = this.x;
-                    gsap.killTweensOf(tl);
-                    wasPlaying = !tl.paused();
-                    tl.pause();
-                    startProgress = tl.progress();
-                    refresh();
-                    ratio = 0.4 / totalWidth;
-                    initChangeX = (startProgress / -ratio) - x;
-                    gsap.set(proxy, { x: startProgress / -ratio });
-                },
-                onDrag: align,
-                onThrowUpdate: align,
-                overshootTolerance: 0,
-                inertia: true,
-                snap(value) {
-                    if (Math.abs(startProgress / -ratio - this.x) < 10) {
-                        return lastSnap + initChangeX;
-                    }
-                    let time = -(value * ratio) * tl.duration(),
-                        wrappedTime = timeWrap(time),
-                        snapTime = times[getClosest(times, wrappedTime, tl.duration())],
-                        dif = snapTime - wrappedTime;
-                    Math.abs(dif) > tl.duration() / 2 && (dif += dif < 0 ? tl.duration() : -tl.duration());
-                    lastSnap = (time + dif) / tl.duration() / -ratio;
-                    return lastSnap;
-                },
-                onRelease() {
-                    syncIndex();
-                    draggable.isThrowing && (indexIsDirty = true);
-                },
-                onThrowComplete: () => {
-                    syncIndex();
-                    wasPlaying && tl.play();
-                }
-            })[0];
-            tl.draggable = draggable;
-        }
-        tl.closestIndex(true);
-        lastIndex = curIndex;
-        onChange && onChange(items[curIndex], curIndex);
-        timeline = tl;
-        return () => window.removeEventListener("resize", onResize);
+      tl.toIndex = (index, vars) => toIndex(index, vars);
+      tl.closestIndex = setCurrent => {
+        let index = getClosest(times, tl.time(), tl.duration());
+        if (setCurrent) { curIndex = index; indexIsDirty = false; }
+        return index;
+      };
+      tl.current = () => indexIsDirty ? tl.closestIndex(true) : curIndex;
+      tl.next = vars => toIndex(tl.current() + 1, vars);
+      tl.previous = vars => toIndex(tl.current() - 1, vars);
+      tl.times = times;
+      tl.progress(1, true).progress(0, true);
+      if (config.reversed) { tl.vars.onReverseComplete(); tl.reverse(); }
+
+      if (config.draggable && typeof Draggable === "function") {
+        proxy = document.createElement("div");
+        let wrap = gsap.utils.wrap(0, 1),
+          ratio, startProgress, draggable, lastSnap, initChangeX, wasPlaying,
+          align = () => tl.progress(wrap(startProgress + (draggable.startX - draggable.x) * ratio)),
+          syncIndex = () => tl.closestIndex(true);
+        draggable = Draggable.create(proxy, {
+          trigger: items[0].parentNode,
+          type: "x",
+          onPressInit() {
+            let x = this.x;
+            gsap.killTweensOf(tl);
+            wasPlaying = !tl.paused();
+            tl.pause();
+            startProgress = tl.progress();
+            refresh();
+            ratio = .4 / totalWidth;
+            initChangeX = (startProgress / -ratio) - x;
+            gsap.set(proxy, { x: startProgress / -ratio });
+          },
+          onDrag: align,
+          onThrowUpdate: align,
+          overshootTolerance: 0,
+          inertia: true,
+          snap(value) {
+            if (Math.abs(startProgress / -ratio - this.x) < 10) return lastSnap + initChangeX;
+            let time = -(value * ratio) * tl.duration(),
+              wrappedTime = timeWrap(time),
+              snapTime = times[getClosest(times, wrappedTime, tl.duration())],
+              dif = snapTime - wrappedTime;
+            Math.abs(dif) > tl.duration() / 2 && (dif += dif < 0 ? tl.duration() : -tl.duration());
+            lastSnap = (time + dif) / tl.duration() / -ratio;
+            return lastSnap;
+          },
+          onRelease() { syncIndex(); draggable.isThrowing && (indexIsDirty = true); },
+          onThrowComplete: () => { syncIndex(); wasPlaying && tl.play(); }
+        })[0];
+        tl.draggable = draggable;
+      }
+
+      tl.closestIndex(true);
+      lastIndex = curIndex;
+      onChange && onChange(items[curIndex], curIndex);
+      timeline = tl;
+      return () => window.removeEventListener("resize", onResize);
     });
     return timeline;
-}
+  }
 </script>
+
 </body></html>
