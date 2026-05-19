@@ -103,7 +103,7 @@ button {
     right: 50px;
     bottom: 230px;
     display: flex;
-    z-index: 3;
+    z-index: 9999 !important;
 }
 
 .globe-slider .slider-btns button {
