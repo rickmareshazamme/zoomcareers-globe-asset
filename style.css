@@ -27,8 +27,8 @@ button {
 }
 
 .globe-slider {
-    margin-left: -24px;
-    margin-right: -24px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .globe-slider .placeholder {
@@ -247,8 +247,8 @@ button {
 /* ===== 1240px and up ===== */
 @media (min-width: 1240px) {
     .globe-slider {
-        margin-left: calc((-100vw + 1139px) / 2);
-        margin-right: calc((-100vw + 1139px) / 2);
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .globe-slider .slider-btns {
