@@ -99,11 +99,15 @@ button {
 }
 
 .globe-slider .slider-btns {
-    position: absolute;
-    right: 50px;
-    bottom: 230px;
-    display: flex;
-    z-index: 9999 !important;
+    position: fixed !important;
+    right: 40px !important;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    z-index: 99999 !important;
 }
 
 .globe-slider .slider-btns button {
@@ -187,9 +191,7 @@ button {
 
 /* ===== 481px and up ===== */
 @media (min-width: 481px) {
-    .globe-slider .slider-btns {
-        bottom: 250px;
-    }
+    .globe-slider .slider-btns { /* overridden by fixed pos above */ }
 
     .globe-slider .slider-item .slider-location-name {
         padding: 8px 15px 8px 8px;
@@ -205,9 +207,7 @@ button {
 
 /* ===== 768px and up ===== */
 @media (min-width: 768px) {
-    .globe-slider .slider-btns {
-        bottom: 290px;
-    }
+    .globe-slider .slider-btns { /* overridden by fixed pos above */ }
 
     .globe-slider #slider-wrapper {
         column-gap: 32px;
@@ -251,9 +251,7 @@ button {
         margin-right: 0;
     }
 
-    .globe-slider .slider-btns {
-        bottom: 290px;
-    }
+    .globe-slider .slider-btns { /* overridden by fixed pos above */ }
 
     .globe-slider .globe-container {
         min-height: 860px;
