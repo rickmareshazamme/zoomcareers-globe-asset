@@ -101,12 +101,12 @@ button {
 .globe-slider .slider-btns {
     position: fixed !important;
     right: 40px !important;
-    top: 50% !important;
-    bottom: auto !important;
-    transform: translateY(-50%) !important;
+    bottom: 280px !important;
+    top: auto !important;
+    transform: none !important;
     display: flex !important;
-    flex-direction: column !important;
-    gap: 16px !important;
+    flex-direction: row !important;
+    gap: 12px !important;
     z-index: 99999 !important;
 }
 
