@@ -38,6 +38,7 @@ button {
 .globe-slider .globe-container {
     height: 100vh;
     position: relative;
+    padding-bottom: 120px;
 }
 
 .globe-slider .globe-wrapper {
