@@ -38,7 +38,6 @@ button {
 .globe-slider .globe-container {
     height: 100vh;
     position: relative;
-    padding-bottom: 120px;
 }
 
 .globe-slider .globe-wrapper {
@@ -102,7 +101,7 @@ button {
 .globe-slider .slider-btns {
     position: fixed !important;
     right: 40px !important;
-    bottom: 280px !important;
+    bottom: 360px !important;
     top: auto !important;
     transform: none !important;
     display: flex !important;
@@ -123,7 +122,7 @@ button {
 .globe-slider #slider-wrapper {
     position: absolute;
     left: 0;
-    bottom: 0;
+    bottom: 80px;
     display: flex;
     align-items: center;
     overflow: hidden;
