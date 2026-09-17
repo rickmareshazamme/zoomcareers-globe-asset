@@ -279,6 +279,29 @@ button {
         min-height: 860px;
     }
 }
+
+/* The copy block is inline-styled so Duda cannot strip it when the fragment is
+   pasted, which is why these need !important to win.
+   .globe-container is max(100vh, 860px) above 1240px and plain 100vh below it,
+   so the city-card row rises as the viewport gets shorter or narrower while the
+   panel still carries a headline, a four-sentence body and four region lines.
+   Without these the panel overlapped the cards by 3px at 1024x768 and 135px at
+   375x667. Scoped on .globe-copy so duda-iframe-v7.html, a frozen published URL
+   whose copy div has no such class, keeps rendering exactly as it does today. */
+@media (max-height: 880px), (max-width: 1239px) {
+    .globe-copy h2 { margin-bottom: 12px !important; }
+    .globe-copy p:last-of-type { margin-bottom: 14px !important; font-size: 16px !important; }
+    .globe-copy ul { font-size: 14px !important; }
+    .globe-copy li { margin-bottom: 4px !important; }
+}
+
+@media (max-width: 767px) {
+    .globe-copy h2 { font-size: 26px !important; margin-bottom: 10px !important; }
+    .globe-copy p:first-of-type { font-size: 16px !important; margin-bottom: 8px !important; }
+    .globe-copy p:last-of-type { font-size: 14px !important; margin-bottom: 12px !important; }
+    .globe-copy ul { font-size: 13px !important; }
+    .globe-copy li { margin-bottom: 3px !important; }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Draggable.min.js"></script>
@@ -287,7 +310,7 @@ button {
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.167.1/examples/jsm/"}}
 </script>
 <div class="zc-globe-slider-host">
-<div style="position:absolute;top:60px;left:5%;max-width:620px;z-index:5;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif;color:#0B1530;pointer-events:none">
+<div class="globe-copy" style="position:absolute;top:60px;left:5%;max-width:620px;z-index:5;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif;color:#0B1530;pointer-events:none">
   <p style="margin:0 0 16px;color:#2661FF;font-weight:600;font-size:20px;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif">Join the team.</p>
   <h2 style="margin:0 0 16px;font-family:'HappyDisplay','AlmadenSans','Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:clamp(36px,4vw,52px);line-height:1.05;letter-spacing:-0.01em;color:#0B1530">Zoomies Everywhere. Connected by Curiosity.</h2>
   <p style="margin:0 0 20px;font-size:18px;line-height:1.5;color:#0B1530;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif">Across every time zone, Zoomies are building careers that make a difference. From San Jose to Singapore, you&rsquo;ll work with curious, creative teams shaping the future of connection worldwide. Ready to explore where your career can grow next? Find your fit and apply today.</p>

@@ -270,3 +270,26 @@ button {
         min-height: 860px;
     }
 }
+
+/* The copy block is inline-styled so Duda cannot strip it when the fragment is
+   pasted, which is why these need !important to win.
+   .globe-container is max(100vh, 860px) above 1240px and plain 100vh below it,
+   so the city-card row rises as the viewport gets shorter or narrower while the
+   panel still carries a headline, a four-sentence body and four region lines.
+   Without these the panel overlapped the cards by 3px at 1024x768 and 135px at
+   375x667. Scoped on .globe-copy so duda-iframe-v7.html, a frozen published URL
+   whose copy div has no such class, keeps rendering exactly as it does today. */
+@media (max-height: 880px), (max-width: 1239px) {
+    .globe-copy h2 { margin-bottom: 12px !important; }
+    .globe-copy p:last-of-type { margin-bottom: 14px !important; font-size: 16px !important; }
+    .globe-copy ul { font-size: 14px !important; }
+    .globe-copy li { margin-bottom: 4px !important; }
+}
+
+@media (max-width: 767px) {
+    .globe-copy h2 { font-size: 26px !important; margin-bottom: 10px !important; }
+    .globe-copy p:first-of-type { font-size: 16px !important; margin-bottom: 8px !important; }
+    .globe-copy p:last-of-type { font-size: 14px !important; margin-bottom: 12px !important; }
+    .globe-copy ul { font-size: 13px !important; }
+    .globe-copy li { margin-bottom: 3px !important; }
+}

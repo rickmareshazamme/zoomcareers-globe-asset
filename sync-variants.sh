@@ -39,7 +39,7 @@ for f in duda-iframe-v*.html; do
 done
 
 block() {
-  sed -n '/<div style="position:absolute;top:60px/,/^<\/div>$/p' "$1"
+  sed -n '/<div class="globe-copy"/,/^<\/div>$/p' "$1"
 }
 
 # Two empty block() results must never compare equal, or a changed anchor
