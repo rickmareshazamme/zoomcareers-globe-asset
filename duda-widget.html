@@ -279,6 +279,81 @@ button {
         min-height: 860px;
     }
 }
+
+/* ===== .globe-copy shared rules: START — style.css is canonical, duda-widget.html carries a byte-identical copy (sync-variants.sh enforces it) ===== */
+/* The copy block is inline-styled so Duda cannot strip it when the fragment is
+   pasted, which is why these need !important to win.
+
+   The panel is absolutely positioned at top:60px while the city-card row is
+   anchored to the bottom of .globe-container, which is max(100vh, 860px) above
+   1240px and plain 100vh below it. How much room the panel has therefore
+   depends on viewport HEIGHT, while how many lines the copy wraps to depends on
+   viewport WIDTH. Sizing on either one alone fails: width breakpoints left a
+   1px cliff at 1239px and still overlapped at 1239x700, and height-only vh
+   sizing blew the headline up on narrow-tall phones (393x852 overlapped by
+   23px). So every value below is driven by min(vw, vh) and is continuous —
+   there are no breakpoints to fall off.
+
+   The clamp ceilings are the approved desktop values, and the coefficients are
+   set so both terms stay above those ceilings at desktop sizes — including a
+   real 1440x900 laptop whose viewport is ~790px after browser chrome, and a
+   Duda embed only ~700px tall, where an earlier tuning silently shrank the
+   headline to 45.8px and 40.6px. The vh term only bites once the viewport is
+   genuinely too short to fit the block. On other viewports clearance is often reduced relative to the
+   old single-sentence copy — expected, the block carries four more lines. The
+   measured claim is narrower than "always better": the panel never overlaps the
+   card row anywhere the old copy did not already overlap, and the card row is
+   never pushed off the viewport. See the PR for the full matrix.
+
+   Every selector is scoped to .globe-copy. duda-iframe-v7.html is a frozen
+   published URL that loads this same stylesheet and its copy div carries no
+   such class, so it cannot match any of this. KEEP NEW RULES .globe-copy
+   SCOPED or the frozen URL will drift. */
+.globe-copy {
+    top: clamp(24px, min(4.2vw, 9vh), 60px) !important;
+}
+
+.globe-copy h2 {
+    font-size: clamp(20px, min(4vw, 8vh), 52px) !important;
+    margin-bottom: clamp(8px, min(1.15vw, 2.4vh), 16px) !important;
+}
+
+.globe-copy > p:nth-of-type(1) {
+    font-size: clamp(13px, min(1.7vw, 3vh), 20px) !important;
+    margin-bottom: clamp(6px, min(1.15vw, 2.4vh), 16px) !important;
+}
+
+.globe-copy > p:nth-of-type(2) {
+    font-size: clamp(12px, min(1.5vw, 2.7vh), 18px) !important;
+    margin-bottom: clamp(8px, min(1.45vw, 3vh), 20px) !important;
+}
+
+.globe-copy ul {
+    font-size: clamp(11px, min(1.3vw, 2.3vh), 15px) !important;
+}
+
+.globe-copy li {
+    margin-bottom: clamp(2px, min(0.45vw, 0.9vh), 6px) !important;
+}
+
+.globe-copy li:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Below 1240px .globe-container loses its 860px floor and collapses to 100vh,
+   so the card row climbs. Restoring that floor was worse than the disease: at
+   1024x640 it made the container taller than the viewport and cut the bottom
+   ~140px off the card row, which a fixed-height Duda iframe cannot scroll to,
+   and it left the position:fixed arrows ~230px detached from the row. The copy
+   block gives up height instead. Only font sizes are touched here, so there is
+   no geometry cliff at the boundary — just a slightly faster taper. */
+@media (max-width: 1239px) {
+    .globe-copy h2 { font-size: clamp(20px, min(4vw, 5.6vh), 52px) !important; }
+    .globe-copy > p:nth-of-type(2) { font-size: clamp(12px, min(1.35vw, 1.95vh), 18px) !important; }
+    .globe-copy ul { font-size: clamp(11px, min(1.1vw, 1.65vh), 15px) !important; }
+}
+
+/* ===== .globe-copy shared rules: END ===== */
 </style>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Draggable.min.js"></script>
@@ -287,10 +362,16 @@ button {
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.167.1/examples/jsm/"}}
 </script>
 <div class="zc-globe-slider-host">
-<div style="position:absolute;top:60px;left:5%;max-width:520px;z-index:5;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif;color:#0B1530;pointer-events:none">
+<div class="globe-copy" style="position:absolute;top:60px;left:5%;max-width:620px;z-index:5;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif;color:#0B1530;pointer-events:none">
   <p style="margin:0 0 16px;color:#2661FF;font-weight:600;font-size:20px;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif">Join the team.</p>
-  <h2 style="margin:0 0 28px;font-family:'HappyDisplay','AlmadenSans','Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:clamp(36px,4vw,52px);line-height:1.05;letter-spacing:-0.01em;color:#0B1530">Zoomies Everywhere. Connected by Curiosity.</h2>
-  <p style="margin:0;font-size:18px;line-height:1.5;color:#0B1530;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif">From San Jose to Singapore, Zoomies are connected by purpose, curiosity, and the drive to build something <span style="white-space:nowrap">meaningful&mdash;together.</span></p>
+  <h2 style="margin:0 0 16px;font-family:'HappyDisplay','AlmadenSans','Helvetica Neue',Arial,sans-serif;font-weight:600;font-size:clamp(36px,4vw,52px);line-height:1.05;letter-spacing:-0.01em;color:#0B1530">Zoomies Everywhere. Connected by Curiosity.</h2>
+  <p style="margin:0 0 20px;font-size:18px;line-height:1.5;color:#0B1530;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif">Across every time zone, Zoomies are building careers that make a difference. From San Jose to Singapore, you&rsquo;ll work with curious, creative teams shaping the future of connection worldwide. Ready to explore where your career can grow next? Find your fit and apply today.</p>
+  <ul style="margin:0;padding:0;list-style:none;font-size:15px;line-height:1.5;color:#0B1530;font-family:'AlmadenSans','Helvetica Neue',Arial,sans-serif">
+    <li style="margin:0 0 6px"><span style="color:#2661FF;font-weight:600">North America</span> &ndash; San Jose, Denver, Boston, Kansas City</li>
+    <li style="margin:0 0 6px"><span style="color:#2661FF;font-weight:600">Europe</span> &ndash; London, Amsterdam, Cologne</li>
+    <li style="margin:0 0 6px"><span style="color:#2661FF;font-weight:600">Asia</span> &ndash; Bangalore, Singapore, Tokyo</li>
+    <li style="margin:0"><span style="color:#2661FF;font-weight:600">Australia</span> &ndash; Sydney</li>
+  </ul>
 </div>
   <section class="globe-slider-section">
     <div class="globe-slider">
