@@ -291,13 +291,10 @@ button {
    Duda embed only ~700px tall, where an earlier tuning silently shrank the
    headline to 45.8px and 40.6px. The vh term only bites once the viewport is
    genuinely too short to fit the block. On other viewports clearance is often reduced relative to the
-   old single-sentence copy — expected, the block carries four more lines. What
-   was actually measured across 28 viewports is narrower: the panel never
-   overlaps anywhere the old copy did not already overlap.
-   1024x640 and 1024x600 do still overlap (-5px, -29px), but they overlapped
-   before this copy landed too (-31px, -71px); that is a pre-existing problem
-   with .globe-container losing its 860px floor below 1240px, not something
-   these rules introduce. See the PR for the full matrix.
+   old single-sentence copy — expected, the block carries four more lines. The
+   measured claim is narrower than "always better": the panel never overlaps the
+   card row anywhere the old copy did not already overlap, and the card row is
+   never pushed off the viewport. See the PR for the full matrix.
 
    Every selector is scoped to .globe-copy. duda-iframe-v7.html is a frozen
    published URL that loads this same stylesheet and its copy div carries no
@@ -313,17 +310,17 @@ button {
 }
 
 .globe-copy > p:nth-of-type(1) {
-    font-size: clamp(13px, min(1.5vw, 3vh), 20px) !important;
+    font-size: clamp(13px, min(1.7vw, 3vh), 20px) !important;
     margin-bottom: clamp(6px, min(1.15vw, 2.4vh), 16px) !important;
 }
 
 .globe-copy > p:nth-of-type(2) {
-    font-size: clamp(12px, min(1.35vw, 2.7vh), 18px) !important;
+    font-size: clamp(12px, min(1.5vw, 2.7vh), 18px) !important;
     margin-bottom: clamp(8px, min(1.45vw, 3vh), 20px) !important;
 }
 
 .globe-copy ul {
-    font-size: clamp(11px, min(1.1vw, 2.3vh), 15px) !important;
+    font-size: clamp(11px, min(1.3vw, 2.3vh), 15px) !important;
 }
 
 .globe-copy li {
@@ -334,17 +331,17 @@ button {
     margin-bottom: 0 !important;
 }
 
-/* Root cause of the 768-1239px trouble: .globe-container's 860px floor is
-   scoped to min-width:1240px, so just below that the container collapses to
-   100vh and the card row climbs while the copy block does not. Restore the
-   floor for this layout across the tablet/small-laptop band. Phones are left
-   on 100vh deliberately — giving a 375px-wide embed an 860px floor would grow
-   the page instead of fitting it. Scoped through .globe-copy so the frozen
-   duda-iframe-v7.html, which shares this stylesheet, keeps its own geometry. */
-@media (min-width: 768px) and (max-width: 1239px) {
-    .globe-copy ~ .globe-slider-section .globe-slider .globe-container {
-        min-height: 860px !important;
-    }
+/* Below 1240px .globe-container loses its 860px floor and collapses to 100vh,
+   so the card row climbs. Restoring that floor was worse than the disease: at
+   1024x640 it made the container taller than the viewport and cut the bottom
+   ~140px off the card row, which a fixed-height Duda iframe cannot scroll to,
+   and it left the position:fixed arrows ~230px detached from the row. The copy
+   block gives up height instead. Only font sizes are touched here, so there is
+   no geometry cliff at the boundary — just a slightly faster taper. */
+@media (max-width: 1239px) {
+    .globe-copy h2 { font-size: clamp(20px, min(4vw, 5.6vh), 52px) !important; }
+    .globe-copy > p:nth-of-type(2) { font-size: clamp(12px, min(1.35vw, 1.95vh), 18px) !important; }
+    .globe-copy ul { font-size: clamp(11px, min(1.1vw, 1.65vh), 15px) !important; }
 }
 
 /* ===== .globe-copy shared rules: END ===== */
