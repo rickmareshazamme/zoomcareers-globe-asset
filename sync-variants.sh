@@ -63,4 +63,28 @@ for f in index.html duda-widget.html; do
     status=1
   fi
 done
+
+# The .globe-copy rules live in style.css (linked by the iframe variants and
+# index.html) and are duplicated into duda-widget.html, which is self-contained
+# and links no stylesheet. Without this check a style.css fix would pass the
+# markup guard above while never reaching the pasted widget.
+css_block() {
+  sed -n '/^\.globe-copy {$/,/^\.globe-copy li:last-child {$/p' "$1"
+}
+css_canonical="$(css_block style.css)"
+if [ -z "$css_canonical" ]; then
+  echo "FATAL  no .globe-copy rules found in style.css (anchor changed?)" >&2
+  exit 1
+fi
+css_found="$(css_block duda-widget.html)"
+if [ -z "$css_found" ]; then
+  echo "DRIFT  duda-widget.html has no .globe-copy rules" >&2
+  status=1
+elif [ "$css_canonical" = "$css_found" ]; then
+  echo "ok     duda-widget.html (.globe-copy CSS matches style.css)"
+else
+  echo "DRIFT  duda-widget.html .globe-copy CSS differs from style.css" >&2
+  status=1
+fi
+
 exit "$status"

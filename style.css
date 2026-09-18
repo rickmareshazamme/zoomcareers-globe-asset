@@ -273,54 +273,58 @@ button {
 
 /* The copy block is inline-styled so Duda cannot strip it when the fragment is
    pasted, which is why these need !important to win.
+
    The panel is absolutely positioned at top:60px while the city-card row is
    anchored to the bottom of .globe-container, which is max(100vh, 860px) above
-   1240px and plain 100vh below it. So the space between them shrinks with
-   viewport HEIGHT. Stepping the type at width breakpoints left cliffs (a 1px
-   one at 1239px) and still overlapped at 1239x700 and 1024x640, so the type is
-   sized continuously in vh instead: as the viewport gets shorter the block gets
-   shorter with it, and there is no breakpoint to fall off.
-   The clamp ceilings are the approved desktop values, so 1440x900 and anything
-   taller renders exactly as signed off.
-   Scoped on .globe-copy so duda-iframe-v7.html, a frozen published URL whose
-   copy div carries no such class, keeps rendering exactly as it does today. */
+   1240px and plain 100vh below it. How much room the panel has therefore
+   depends on viewport HEIGHT, while how many lines the copy wraps to depends on
+   viewport WIDTH. Sizing on either one alone fails: width breakpoints left a
+   1px cliff at 1239px and still overlapped at 1239x700, and height-only vh
+   sizing blew the headline up on narrow-tall phones (393x852 overlapped by
+   23px). So every value below is driven by min(vw, vh) and is continuous —
+   there are no breakpoints to fall off.
+
+   The clamp ceilings are the approved desktop values and min() picks the vh
+   side at desktop sizes, so 1440x900 and anything larger renders exactly as
+   signed off. On other viewports clearance is often reduced relative to the
+   old single-sentence copy — expected, the block carries four more lines — and
+   measured across 28 viewports it is never worse than the old copy anywhere.
+   1024x640 and 1024x600 do still overlap (-5px, -29px), but they overlapped
+   before this copy landed too (-31px, -71px); that is a pre-existing problem
+   with .globe-container losing its 860px floor below 1240px, not something
+   these rules introduce. See the PR for the full matrix.
+
+   Every selector is scoped to .globe-copy. duda-iframe-v7.html is a frozen
+   published URL that loads this same stylesheet and its copy div carries no
+   such class, so it cannot match any of this. KEEP NEW RULES .globe-copy
+   SCOPED or the frozen URL will drift. */
+.globe-copy {
+    top: clamp(24px, 6.7vh, 60px) !important;
+}
+
 .globe-copy h2 {
-    font-size: clamp(24px, 5.8vh, 52px) !important;
-    margin-bottom: clamp(8px, 1.8vh, 16px) !important;
+    font-size: clamp(20px, min(4.6vw, 5.8vh), 52px) !important;
+    margin-bottom: clamp(8px, min(1.3vw, 1.8vh), 16px) !important;
 }
 
 .globe-copy p:first-of-type {
-    font-size: clamp(15px, 2.2vh, 20px) !important;
-    margin-bottom: clamp(6px, 1.8vh, 16px) !important;
+    font-size: clamp(13px, min(1.8vw, 2.2vh), 20px) !important;
+    margin-bottom: clamp(6px, min(1.3vw, 1.8vh), 16px) !important;
 }
 
 .globe-copy p:last-of-type {
-    font-size: clamp(13px, 2vh, 18px) !important;
-    margin-bottom: clamp(10px, 2.2vh, 20px) !important;
+    font-size: clamp(12px, min(1.6vw, 2vh), 18px) !important;
+    margin-bottom: clamp(8px, min(1.6vw, 2.2vh), 20px) !important;
 }
 
 .globe-copy ul {
-    font-size: clamp(12px, 1.7vh, 15px) !important;
+    font-size: clamp(11px, min(1.35vw, 1.7vh), 15px) !important;
 }
 
 .globe-copy li {
-    margin-bottom: clamp(2px, 0.7vh, 6px) !important;
+    margin-bottom: clamp(2px, min(0.5vw, 0.7vh), 6px) !important;
 }
 
 .globe-copy li:last-child {
     margin-bottom: 0 !important;
-}
-
-/* Below ~700px of viewport height the vh scaling above has bottomed out on its
-   clamp floors, and a narrow phone (360x640, 320x568) still ran the region list
-   into the cards. Pull the panel up off its inline top:60px and take the type
-   down one more step. Measured against the pre-change markup, this keeps every
-   viewport at or above its old clearance. */
-@media (max-height: 700px) {
-    .globe-copy { top: 24px !important; }
-    .globe-copy h2 { font-size: clamp(20px, 4.6vh, 34px) !important; margin-bottom: 8px !important; }
-    .globe-copy p:first-of-type { font-size: 14px !important; margin-bottom: 6px !important; }
-    .globe-copy p:last-of-type { font-size: 12px !important; margin-bottom: 8px !important; }
-    .globe-copy ul { font-size: 11px !important; }
-    .globe-copy li { margin-bottom: 2px !important; }
 }
