@@ -69,7 +69,7 @@ done
 # and links no stylesheet. Without this check a style.css fix would pass the
 # markup guard above while never reaching the pasted widget.
 css_block() {
-  sed -n '/^\.globe-copy {$/,/^\.globe-copy li:last-child {$/p' "$1"
+  sed -n '/shared rules: START/,/shared rules: END/p' "$1"
 }
 css_canonical="$(css_block style.css)"
 if [ -z "$css_canonical" ]; then

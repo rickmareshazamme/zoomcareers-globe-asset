@@ -271,6 +271,7 @@ button {
     }
 }
 
+/* ===== .globe-copy shared rules: START (kept in sync with duda-widget.html) ===== */
 /* The copy block is inline-styled so Duda cannot strip it when the fragment is
    pasted, which is why these need !important to win.
 
@@ -328,3 +329,4 @@ button {
 .globe-copy li:last-child {
     margin-bottom: 0 !important;
 }
+/* ===== .globe-copy shared rules: END ===== */
