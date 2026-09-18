@@ -271,7 +271,7 @@ button {
     }
 }
 
-/* ===== .globe-copy shared rules: START (kept in sync with duda-widget.html) ===== */
+/* ===== .globe-copy shared rules: START — style.css is canonical, duda-widget.html carries a byte-identical copy (sync-variants.sh enforces it) ===== */
 /* The copy block is inline-styled so Duda cannot strip it when the fragment is
    pasted, which is why these need !important to win.
 
@@ -288,8 +288,9 @@ button {
    The clamp ceilings are the approved desktop values and min() picks the vh
    side at desktop sizes, so 1440x900 and anything larger renders exactly as
    signed off. On other viewports clearance is often reduced relative to the
-   old single-sentence copy — expected, the block carries four more lines — and
-   measured across 28 viewports it is never worse than the old copy anywhere.
+   old single-sentence copy — expected, the block carries four more lines. What
+   was actually measured across 28 viewports is narrower: the panel never
+   overlaps anywhere the old copy did not already overlap.
    1024x640 and 1024x600 do still overlap (-5px, -29px), but they overlapped
    before this copy landed too (-31px, -71px); that is a pre-existing problem
    with .globe-container losing its 860px floor below 1240px, not something
@@ -308,14 +309,14 @@ button {
     margin-bottom: clamp(8px, min(1.3vw, 1.8vh), 16px) !important;
 }
 
-.globe-copy p:first-of-type {
-    font-size: clamp(13px, min(1.8vw, 2.2vh), 20px) !important;
+.globe-copy > p:nth-of-type(1) {
+    font-size: clamp(13px, min(1.8vw, 2.25vh), 20px) !important;
     margin-bottom: clamp(6px, min(1.3vw, 1.8vh), 16px) !important;
 }
 
-.globe-copy p:last-of-type {
+.globe-copy > p:nth-of-type(2) {
     font-size: clamp(12px, min(1.6vw, 2vh), 18px) !important;
-    margin-bottom: clamp(8px, min(1.6vw, 2.2vh), 20px) !important;
+    margin-bottom: clamp(8px, min(1.6vw, 2.25vh), 20px) !important;
 }
 
 .globe-copy ul {
