@@ -285,9 +285,12 @@ button {
    23px). So every value below is driven by min(vw, vh) and is continuous —
    there are no breakpoints to fall off.
 
-   The clamp ceilings are the approved desktop values and min() picks the vh
-   side at desktop sizes, so 1440x900 and anything larger renders exactly as
-   signed off. On other viewports clearance is often reduced relative to the
+   The clamp ceilings are the approved desktop values, and the coefficients are
+   set so both terms stay above those ceilings at desktop sizes — including a
+   real 1440x900 laptop whose viewport is ~790px after browser chrome, and a
+   Duda embed only ~700px tall, where an earlier tuning silently shrank the
+   headline to 45.8px and 40.6px. The vh term only bites once the viewport is
+   genuinely too short to fit the block. On other viewports clearance is often reduced relative to the
    old single-sentence copy — expected, the block carries four more lines. What
    was actually measured across 28 viewports is narrower: the panel never
    overlaps anywhere the old copy did not already overlap.
@@ -301,33 +304,47 @@ button {
    such class, so it cannot match any of this. KEEP NEW RULES .globe-copy
    SCOPED or the frozen URL will drift. */
 .globe-copy {
-    top: clamp(24px, 6.7vh, 60px) !important;
+    top: clamp(24px, min(4.2vw, 9vh), 60px) !important;
 }
 
 .globe-copy h2 {
-    font-size: clamp(20px, min(4.6vw, 5.8vh), 52px) !important;
-    margin-bottom: clamp(8px, min(1.3vw, 1.8vh), 16px) !important;
+    font-size: clamp(20px, min(4vw, 8vh), 52px) !important;
+    margin-bottom: clamp(8px, min(1.15vw, 2.4vh), 16px) !important;
 }
 
 .globe-copy > p:nth-of-type(1) {
-    font-size: clamp(13px, min(1.8vw, 2.25vh), 20px) !important;
-    margin-bottom: clamp(6px, min(1.3vw, 1.8vh), 16px) !important;
+    font-size: clamp(13px, min(1.5vw, 3vh), 20px) !important;
+    margin-bottom: clamp(6px, min(1.15vw, 2.4vh), 16px) !important;
 }
 
 .globe-copy > p:nth-of-type(2) {
-    font-size: clamp(12px, min(1.6vw, 2vh), 18px) !important;
-    margin-bottom: clamp(8px, min(1.6vw, 2.25vh), 20px) !important;
+    font-size: clamp(12px, min(1.35vw, 2.7vh), 18px) !important;
+    margin-bottom: clamp(8px, min(1.45vw, 3vh), 20px) !important;
 }
 
 .globe-copy ul {
-    font-size: clamp(11px, min(1.35vw, 1.7vh), 15px) !important;
+    font-size: clamp(11px, min(1.1vw, 2.3vh), 15px) !important;
 }
 
 .globe-copy li {
-    margin-bottom: clamp(2px, min(0.5vw, 0.7vh), 6px) !important;
+    margin-bottom: clamp(2px, min(0.45vw, 0.9vh), 6px) !important;
 }
 
 .globe-copy li:last-child {
     margin-bottom: 0 !important;
 }
+
+/* Root cause of the 768-1239px trouble: .globe-container's 860px floor is
+   scoped to min-width:1240px, so just below that the container collapses to
+   100vh and the card row climbs while the copy block does not. Restore the
+   floor for this layout across the tablet/small-laptop band. Phones are left
+   on 100vh deliberately — giving a 375px-wide embed an 860px floor would grow
+   the page instead of fitting it. Scoped through .globe-copy so the frozen
+   duda-iframe-v7.html, which shares this stylesheet, keeps its own geometry. */
+@media (min-width: 768px) and (max-width: 1239px) {
+    .globe-copy ~ .globe-slider-section .globe-slider .globe-container {
+        min-height: 860px !important;
+    }
+}
+
 /* ===== .globe-copy shared rules: END ===== */
