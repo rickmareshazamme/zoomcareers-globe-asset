@@ -273,23 +273,54 @@ button {
 
 /* The copy block is inline-styled so Duda cannot strip it when the fragment is
    pasted, which is why these need !important to win.
-   .globe-container is max(100vh, 860px) above 1240px and plain 100vh below it,
-   so the city-card row rises as the viewport gets shorter or narrower while the
-   panel still carries a headline, a four-sentence body and four region lines.
-   Without these the panel overlapped the cards by 3px at 1024x768 and 135px at
-   375x667. Scoped on .globe-copy so duda-iframe-v7.html, a frozen published URL
-   whose copy div has no such class, keeps rendering exactly as it does today. */
-@media (max-height: 880px), (max-width: 1239px) {
-    .globe-copy h2 { margin-bottom: 12px !important; }
-    .globe-copy p:last-of-type { margin-bottom: 14px !important; font-size: 16px !important; }
-    .globe-copy ul { font-size: 14px !important; }
-    .globe-copy li { margin-bottom: 4px !important; }
+   The panel is absolutely positioned at top:60px while the city-card row is
+   anchored to the bottom of .globe-container, which is max(100vh, 860px) above
+   1240px and plain 100vh below it. So the space between them shrinks with
+   viewport HEIGHT. Stepping the type at width breakpoints left cliffs (a 1px
+   one at 1239px) and still overlapped at 1239x700 and 1024x640, so the type is
+   sized continuously in vh instead: as the viewport gets shorter the block gets
+   shorter with it, and there is no breakpoint to fall off.
+   The clamp ceilings are the approved desktop values, so 1440x900 and anything
+   taller renders exactly as signed off.
+   Scoped on .globe-copy so duda-iframe-v7.html, a frozen published URL whose
+   copy div carries no such class, keeps rendering exactly as it does today. */
+.globe-copy h2 {
+    font-size: clamp(24px, 5.8vh, 52px) !important;
+    margin-bottom: clamp(8px, 1.8vh, 16px) !important;
 }
 
-@media (max-width: 767px) {
-    .globe-copy h2 { font-size: 26px !important; margin-bottom: 10px !important; }
-    .globe-copy p:first-of-type { font-size: 16px !important; margin-bottom: 8px !important; }
-    .globe-copy p:last-of-type { font-size: 14px !important; margin-bottom: 12px !important; }
-    .globe-copy ul { font-size: 13px !important; }
-    .globe-copy li { margin-bottom: 3px !important; }
+.globe-copy p:first-of-type {
+    font-size: clamp(15px, 2.2vh, 20px) !important;
+    margin-bottom: clamp(6px, 1.8vh, 16px) !important;
+}
+
+.globe-copy p:last-of-type {
+    font-size: clamp(13px, 2vh, 18px) !important;
+    margin-bottom: clamp(10px, 2.2vh, 20px) !important;
+}
+
+.globe-copy ul {
+    font-size: clamp(12px, 1.7vh, 15px) !important;
+}
+
+.globe-copy li {
+    margin-bottom: clamp(2px, 0.7vh, 6px) !important;
+}
+
+.globe-copy li:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Below ~700px of viewport height the vh scaling above has bottomed out on its
+   clamp floors, and a narrow phone (360x640, 320x568) still ran the region list
+   into the cards. Pull the panel up off its inline top:60px and take the type
+   down one more step. Measured against the pre-change markup, this keeps every
+   viewport at or above its old clearance. */
+@media (max-height: 700px) {
+    .globe-copy { top: 24px !important; }
+    .globe-copy h2 { font-size: clamp(20px, 4.6vh, 34px) !important; margin-bottom: 8px !important; }
+    .globe-copy p:first-of-type { font-size: 14px !important; margin-bottom: 6px !important; }
+    .globe-copy p:last-of-type { font-size: 12px !important; margin-bottom: 8px !important; }
+    .globe-copy ul { font-size: 11px !important; }
+    .globe-copy li { margin-bottom: 2px !important; }
 }
